@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.usv.matchanalyzer.v2'
+    namespace 'com.usv.matchanalyzer'
     compileSdk 35
 
     defaultConfig {
