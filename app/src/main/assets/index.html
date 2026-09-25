@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>USV Match Analyzer V6.5</title>
+<style>
+:root{--b:#123f85;--y:#ffd52a;--bg:#f4f7fb;--bd:#dbe3ef;--tx:#18212f;--muted:#667085;--ok:#176b37;--warn:#7a5d00}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--tx)}
+header{background:linear-gradient(135deg,var(--b),#1f5bb2);color:#fff;padding:18px;border-bottom:5px solid var(--y)}
+.wrap{max-width:1260px;margin:18px auto;padding:0 14px 30px}
+.card{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 6px 20px rgba(18,63,133,.07)}
+.grid{display:grid;grid-template-columns:1.35fr .65fr;gap:16px}@media(max-width:920px){.grid{grid-template-columns:1fr}}
+.stage{position:relative;overflow:hidden;border-radius:12px;background:#000}
+.stage video,.stage canvas{width:100%;display:block}
+.stage canvas{position:absolute;inset:0;pointer-events:auto}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;margin-top:6px;font:inherit}
+button{padding:10px 12px;border:0;border-radius:10px;font-weight:700;cursor:pointer}
+.primary{background:var(--b);color:#fff}.yellow{background:var(--y)}.ghost{background:#edf3fb;color:var(--b)}.danger{background:#fff0f0;color:#a61b1b}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:150px}
+.small{font-size:12px;color:var(--muted);line-height:1.4}
+.status{padding:10px;border-radius:10px;margin-top:10px;background:#effaf2;border:1px solid #bce8c8;color:var(--ok)}
+.warn{background:#fff8df;border:1px solid #f0dc88;padding:10px;border-radius:10px;color:var(--warn);font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}@media(max-width:700px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:#f8fafc;border:1px solid var(--bd);border-radius:10px;padding:10px;text-align:center}.kpi b{display:block;font-size:22px;color:var(--b)}
+.log{background:#0f1720;color:#d8e0ea;border-radius:10px;padding:10px;min-height:150px;max-height:280px;overflow:auto;white-space:pre-wrap;font:12px Consolas,monospace}
+.swatch{display:inline-block;width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #888;vertical-align:middle;margin-right:6px}
+.zoomWrap{display:grid;grid-template-columns:1fr 220px;gap:12px;align-items:start}@media(max-width:800px){.zoomWrap{grid-template-columns:1fr}}
+#zoomCanvas{width:220px;height:220px;border:1px solid var(--bd);border-radius:12px;background:#111;image-rendering:pixelated}
+.list{background:#f8fafc;border:1px solid var(--bd);border-radius:10px;padding:10px}
+</style>
+</head>
+<body>
+<header>
+<h1 style="margin:0">⚽ USV Match Analyzer V6.5</h1>
+<div>Calibrage amélioré du ballon et des maillots + profils sauvegardés</div>
+</header>
+
+<div class="wrap">
+<div class="card">
+<h2>1. Charger la vidéo</h2>
+<input id="fileInput" type="file" accept="video/*">
+<div id="status" class="status">Choisis ton MP4.</div>
+</div>
+
+<div class="grid">
+<div>
+<div class="card">
+<h2>2. Lecture & calibrage précis</h2>
+<div class="zoomWrap">
+  <div class="stage">
+    <video id="video" controls playsinline></video>
+    <canvas id="overlay"></canvas>
+  </div>
+  <div>
+    <canvas id="zoomCanvas" width="220" height="220"></canvas>
+    <div class="small" style="margin-top:6px">Loupe x6 autour de la souris pour cliquer plus précisément.</div>
+  </div>
+</div>
+
+<div class="row" style="margin-top:10px">
+<button class="ghost" id="back1">⏪ -1 s</button>
+<button class="ghost" id="back01">◀ -0,1 s</button>
+<button class="primary" id="playBtn">▶ Lire / Pause</button>
+<button class="ghost" id="fwd01">+0,1 s ▶</button>
+<button class="ghost" id="fwd1">+1 s ⏩</button>
+</div>
+
+<div class="warn" style="margin-top:10px">
+Nouveau : pour les maillots, prends <b>3 à 5 échantillons</b> sur des joueurs différents. Pour le ballon, trace un <b>petit cercle autour du ballon</b> au lieu de cliquer sur un seul pixel.
+</div>
+
+<div class="row" style="margin-top:10px">
+<button class="yellow" id="ballMode">⚽ Calibrer ballon (zone)</button>
+<button class="ghost" id="teamAMode">🟡 Ajouter échantillon USV</button>
+<button class="ghost" id="teamBMode">🔵 Ajouter échantillon adverse</button>
+</div>
+
+<div class="row" style="margin-top:10px">
+<button class="ghost" id="undoCalib">↩ Annuler dernier point</button>
+<button class="danger" id="resetCalib">Réinitialiser calibrage</button>
+</div>
+
+<div id="calibInfo" class="list" style="margin-top:10px"></div>
+</div>
+
+<div class="card">
+<h2>3. Réglages du tracker</h2>
+<div class="row">
+<div><label>Analyse toutes les (s)</label><input id="sample" type="number" min="0.2" step="0.1" value="0.5"></div>
+<div><label>Rayon recherche ballon (px)</label><input id="searchRadius" type="number" value="160"></div>
+</div>
+<div class="row" style="margin-top:8px">
+<div><label>Tolérance couleur ballon</label><input id="ballTolerance" type="number" value="110"></div>
+<div><label>Distance ballon-joueur max (px)</label><input id="maxPlayerDist" type="number" value="150"></div>
+</div>
+<div class="row" style="margin-top:8px">
+<div><label>Changement joueur min (px)</label><input id="switchDist" type="number" value="70"></div>
+<div><label>Réacquisition globale après N pertes</label><input id="reacquireAfter" type="number" min="1" value="5"></div>
+</div>
+<div class="row" style="margin-top:10px">
+<button class="yellow" id="loadAI">🤖 Charger IA joueurs</button>
+<button class="primary" id="start" disabled>▶ Analyser le match</button>
+<button class="ghost" id="stop">Arrêter</button>
+</div>
+</div>
+</div>
+
+<div>
+<div class="card">
+<h2>Calibration actuelle</h2>
+<div class="small">
+<div><span class="swatch" id="swA"></span>USV : <b id="nA">0</b> échantillons</div><br>
+<div><span class="swatch" id="swB"></span>Adversaire : <b id="nB">0</b> échantillons</div><br>
+<div><span class="swatch" id="swBall"></span>Ballon : <b id="nBall">0</b> pixels de zone</div>
+</div>
+<div class="row" style="margin-top:10px">
+<button class="ghost" id="saveProfile">💾 Sauver profil</button>
+<button class="ghost" id="loadProfile">📂 Charger profil</button>
+</div>
+</div>
+
+<div class="card">
+<h2>Statistiques</h2>
+<div class="kpis">
+<div class="kpi"><b id="posA">0%</b>Poss. USV</div>
+<div class="kpi"><b id="passA">0</b>Passes USV</div>
+<div class="kpi"><b id="posB">0%</b>Poss. Adv.</div>
+<div class="kpi"><b id="passB">0</b>Passes Adv.</div>
+</div>
+<div class="kpis">
+<div class="kpi"><b id="frames">0</b>Images</div>
+<div class="kpi"><b id="ballFrames">0</b>Ballon suivi</div>
+<div class="kpi"><b id="ballTrack">0%</b>Taux suivi</div>
+<div class="kpi"><b id="reacq">0</b>Réacquisitions</div>
+</div>
+</div>
+
+<div class="card">
+<h2>Journal</h2>
+<div id="log" class="log">En attente.</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const v=$('video'), ov=$('overlay'), octx=ov.getContext('2d'), zc=$('zoomCanvas'), zctx=zc.getContext('2d');
+let objectUrl=null, model=null, running=false, mode=null, mousePt=null;
+let teamASamples=[], teamBSamples=[], ballPixels=[];
+let ballPos=null, ballRadius=7;
+let history=[];
+let stats={A:{poss:0,passes:0},B:{poss:0,passes:0}};
+let frames=0,ballFrames=0,lost=0,reacq=0,lastOwnerTeam=null,lastOwnerCenter=null;
+
+function log(s){const el=$('log');if(el.textContent==='En attente.')el.textContent='';el.textContent+=(el.textContent?'\\n':'')+s;el.scrollTop=el.scrollHeight}
+function fmtTime(s){if(!Number.isFinite(s))return'00:00';s=Math.floor(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function avg(samples){
+ if(!samples.length)return[128,128,128];
+ return samples.reduce((a,c)=>[a[0]+c[0],a[1]+c[1],a[2]+c[2]],[0,0,0]).map(x=>x/samples.length);
+}
+function rgb(c){return `rgb(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])})`}
+function cd(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2])}
+function d2(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1])}
+function loadScript(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=()=>reject(new Error('Impossible de charger '+src));document.head.appendChild(s)})}
+
+function updateCalibUI(){
+ const a=avg(teamASamples), b=avg(teamBSamples), ball=avg(ballPixels);
+ $('swA').style.background=rgb(a);$('swB').style.background=rgb(b);$('swBall').style.background=rgb(ball);
+ $('nA').textContent=teamASamples.length;$('nB').textContent=teamBSamples.length;$('nBall').textContent=ballPixels.length;
+ $('calibInfo').innerHTML=
+   `<b>USV :</b> ${teamASamples.length} points — couleur moyenne ${a.map(x=>Math.round(x)).join(', ')}<br>`+
+   `<b>Adversaire :</b> ${teamBSamples.length} points — couleur moyenne ${b.map(x=>Math.round(x)).join(', ')}<br>`+
+   `<b>Ballon :</b> ${ballPixels.length} pixels — couleur moyenne ${ball.map(x=>Math.round(x)).join(', ')}`;
+}
+updateCalibUI();
+
+$('fileInput').onchange=()=>{
+ const f=$('fileInput').files?.[0]; if(!f)return;
+ if(objectUrl)URL.revokeObjectURL(objectUrl);
+ objectUrl=URL.createObjectURL(f);v.src=objectUrl;v.load();$('status').textContent='Fichier chargé : '+f.name;
+};
+v.addEventListener('loadedmetadata',()=>{ov.width=v.videoWidth;ov.height=v.videoHeight;$('status').textContent='Vidéo prête — '+fmtTime(v.duration)});
+$('playBtn').onclick=async()=>{try{if(v.paused)await v.play();else v.pause()}catch(e){log(e.message)}};
+$('back1').onclick=()=>v.currentTime=Math.max(0,v.currentTime-1);
+$('fwd1').onclick=()=>v.currentTime=Math.min(v.duration||999999,v.currentTime+1);
+$('back01').onclick=()=>v.currentTime=Math.max(0,v.currentTime-.1);
+$('fwd01').onclick=()=>v.currentTime=Math.min(v.duration||999999,v.currentTime+.1);
+
+function frameCanvas(){
+ const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;
+ const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(v,0,0);return[c,ctx];
+}
+function eventToVideo(ev){
+ const r=ov.getBoundingClientRect();
+ return [(ev.clientX-r.left)*(ov.width/r.width),(ev.clientY-r.top)*(ov.height/r.height)];
+}
+function px(ctx,x,y){
+ const p=ctx.getImageData(Math.max(0,Math.floor(x)),Math.max(0,Math.floor(y)),1,1).data;return[p[0],p[1],p[2]];
+}
+
+ov.addEventListener('mousemove',ev=>{
+ mousePt=eventToVideo(ev);
+ const [c,ctx]=frameCanvas();
+ const size=36;
+ const sx=Math.max(0,Math.floor(mousePt[0]-size/2)), sy=Math.max(0,Math.floor(mousePt[1]-size/2));
+ zctx.imageSmoothingEnabled=false;
+ zctx.clearRect(0,0,220,220);
+ zctx.drawImage(c,sx,sy,size,size,0,0,220,220);
+ zctx.strokeStyle='red';zctx.lineWidth=2;zctx.beginPath();zctx.moveTo(110,90);zctx.lineTo(110,130);zctx.moveTo(90,110);zctx.lineTo(130,110);zctx.stroke();
+});
+
+ov.addEventListener('click',ev=>{
+ if(!mode)return;
+ const [x,y]=eventToVideo(ev);const [c,ctx]=frameCanvas();
+ if(mode==='A'){
+   const color=px(ctx,x,y);teamASamples.push(color);history.push(['A']);log('Échantillon USV ajouté');
+ }else if(mode==='B'){
+   const color=px(ctx,x,y);teamBSamples.push(color);history.push(['B']);log('Échantillon adverse ajouté');
+ }else if(mode==='BALL'){
+   const rad=8, arr=[];
+   for(let yy=-rad;yy<=rad;yy++){
+     for(let xx=-rad;xx<=rad;xx++){
+       if(xx*xx+yy*yy<=rad*rad){
+         arr.push(px(ctx,x+xx,y+yy));
+       }
+     }
+   }
+   ballPixels=arr;ballPos=[x,y];ballRadius=rad;history.push(['BALL']);log('Zone ballon calibrée');
+ }
+ updateCalibUI();drawCalibration();
+});
+
+function drawCalibration(){
+ octx.clearRect(0,0,ov.width,ov.height);
+ if(ballPos){
+   octx.strokeStyle='red';octx.lineWidth=4;octx.beginPath();octx.arc(ballPos[0],ballPos[1],ballRadius+5,0,Math.PI*2);octx.stroke();
+ }
+}
+$('ballMode').onclick=()=>{mode='BALL';$('status').textContent='Clique précisément au centre du ballon.'}
+$('teamAMode').onclick=()=>{mode='A';$('status').textContent='Clique sur une zone pleine du maillot USV.'}
+$('teamBMode').onclick=()=>{mode='B';$('status').textContent='Clique sur une zone pleine du maillot adverse.'}
+$('undoCalib').onclick=()=>{
+ const h=history.pop();if(!h)return;
+ if(h[0]==='A')teamASamples.pop();if(h[0]==='B')teamBSamples.pop();if(h[0]==='BALL'){ballPixels=[];ballPos=null}
+ updateCalibUI();drawCalibration();
+}
+$('resetCalib').onclick=()=>{teamASamples=[];teamBSamples=[];ballPixels=[];ballPos=null;history=[];updateCalibUI();drawCalibration();}
+
+$('saveProfile').onclick=()=>{
+ localStorage.setItem('usv_calibration_v65',JSON.stringify({teamASamples,teamBSamples,ballPixels,ballPos,ballRadius}));
+ $('status').textContent='Profil de calibration sauvegardé dans ce navigateur.';
+}
+$('loadProfile').onclick=()=>{
+ const s=localStorage.getItem('usv_calibration_v65');if(!s){$('status').textContent='Aucun profil sauvegardé.';return}
+ const p=JSON.parse(s);teamASamples=p.teamASamples||[];teamBSamples=p.teamBSamples||[];ballPixels=p.ballPixels||[];ballPos=p.ballPos||null;ballRadius=p.ballRadius||8;updateCalibUI();drawCalibration();$('status').textContent='Profil chargé.';
+}
+
+$('loadAI').onclick=async()=>{
+ try{
+  $('status').textContent='Chargement IA joueurs...';
+  if(!window.tf)await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js');
+  if(!window.cocoSsd)await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js');
+  model=await cocoSsd.load({base:'lite_mobilenet_v2'});$('start').disabled=false;$('status').textContent='IA prête.';log('IA joueurs prête.');
+ }catch(e){log(e.message)}
+};
+
+function meanTorso(pred,ctx){
+ const [x,y,w,h]=pred.bbox;const sx=Math.max(0,Math.floor(x+w*.25)),sy=Math.max(0,Math.floor(y+h*.15));
+ const sw=Math.max(1,Math.floor(w*.5)),sh=Math.max(1,Math.floor(h*.3));
+ try{
+  const d=ctx.getImageData(sx,sy,Math.min(sw,v.videoWidth-sx),Math.min(sh,v.videoHeight-sy)).data;
+  let r=0,g=0,b=0,n=0;for(let i=0;i<d.length;i+=40){r+=d[i];g+=d[i+1];b+=d[i+2];n++}
+  return n?[r/n,g/n,b/n]:[128,128,128];
+ }catch(e){return[128,128,128]}
+}
+function teamOf(pred,ctx){
+ const c=meanTorso(pred,ctx),a=avg(teamASamples),b=avg(teamBSamples);return cd(c,a)<cd(c,b)?'A':'B';
+}
+function ballMean(){return avg(ballPixels)}
+
+function searchBall(ctx,global=false){
+ if(!ballPixels.length)return null;
+ const target=ballMean(),tol=Math.max(40,parseFloat($('ballTolerance').value)||110);
+ let x0=0,y0=0,x1=v.videoWidth-1,y1=v.videoHeight-1;
+ if(!global&&ballPos){
+   const r=Math.max(50,parseInt($('searchRadius').value)||160);
+   x0=Math.max(2,Math.floor(ballPos[0]-r));x1=Math.min(v.videoWidth-3,Math.floor(ballPos[0]+r));
+   y0=Math.max(2,Math.floor(ballPos[1]-r));y1=Math.min(v.videoHeight-3,Math.floor(ballPos[1]+r));
+ }
+ const img=ctx.getImageData(x0,y0,x1-x0+1,y1-y0+1),data=img.data,w=img.width,step=global?8:3;
+ let best=null,bestScore=1e9;
+ for(let yy=2;yy<img.height-2;yy+=step){
+  for(let xx=2;xx<img.width-2;xx+=step){
+   const i=(yy*w+xx)*4,c=[data[i],data[i+1],data[i+2]],gx=x0+xx,gy=y0+yy;
+   let score=cd(c,target);
+   if(!global&&ballPos)score+=d2([gx,gy],ballPos)*.15;
+   if(score<bestScore){bestScore=score;best=[gx,gy]}
+  }
+ }
+ if(bestScore<tol){ballPos=best;return best}
+ return null;
+}
+
+function updateStats(){
+ const total=stats.A.poss+stats.B.poss;
+ $('posA').textContent=(total?100*stats.A.poss/total:0).toFixed(1)+'%';$('posB').textContent=(total?100*stats.B.poss/total:0).toFixed(1)+'%';
+ $('passA').textContent=stats.A.passes;$('passB').textContent=stats.B.passes;$('frames').textContent=frames;$('ballFrames').textContent=ballFrames;
+ $('ballTrack').textContent=(frames?100*ballFrames/frames:0).toFixed(1)+'%';$('reacq').textContent=reacq;
+}
+
+async function analyzeFrame(stepSec){
+ const [c,ctx]=frameCanvas(),preds=await model.detect(v,80,.22),persons=preds.filter(p=>p.class==='person');frames++;
+ let bp=searchBall(ctx,false);
+ if(!bp){lost++;const ra=Math.max(1,parseInt($('reacquireAfter').value)||5);if(lost>=ra){bp=searchBall(ctx,true);if(bp){reacq++;lost=0;log('Ballon réacquis à '+fmtTime(v.currentTime))}}}
+ else lost=0;
+ octx.clearRect(0,0,ov.width,ov.height);
+ if(bp){
+  ballFrames++;octx.strokeStyle='red';octx.lineWidth=4;octx.beginPath();octx.arc(bp[0],bp[1],12,0,Math.PI*2);octx.stroke();
+  const players=persons.map(p=>{const[x,y,w,h]=p.bbox;return{team:teamOf(p,ctx),center:[x+w/2,y+h/2]}});
+  let best=null,bd=1e9;for(const p of players){const d=d2(p.center,bp);if(d<bd){bd=d;best=p}}
+  const maxD=Math.max(40,parseFloat($('maxPlayerDist').value)||150),sw=Math.max(30,parseFloat($('switchDist').value)||70);
+  if(best&&bd<=maxD){
+   stats[best.team].poss+=stepSec;
+   if(lastOwnerTeam===best.team&&lastOwnerCenter&&d2(lastOwnerCenter,best.center)>=sw)stats[best.team].passes++;
+   lastOwnerTeam=best.team;lastOwnerCenter=best.center;
+  }
+ }
+ updateStats();
+}
+
+function waitSeek(){return new Promise(resolve=>{let done=false;const f=()=>{if(done)return;done=true;resolve()};v.addEventListener('seeked',f,{once:true});setTimeout(f,700)})}
+async function loop(){
+ const step=Math.max(.2,parseFloat($('sample').value)||.5);
+ running=true;stats={A:{poss:0,passes:0},B:{poss:0,passes:0}};frames=0;ballFrames=0;lost=0;reacq=0;lastOwnerTeam=null;lastOwnerCenter=null;updateStats();
+ while(running&&v.currentTime<v.duration){
+  try{await analyzeFrame(step)}catch(e){log('Analyse : '+e.message)}
+  v.currentTime=Math.min(v.duration,v.currentTime+step);await waitSeek();
+ }
+ running=false;$('status').textContent='Analyse terminée ou arrêtée.';log('Fin — suivi ballon '+(frames?100*ballFrames/frames:0).toFixed(1)+'%');
+}
+$('start').onclick=()=>{
+ if(!model){$('status').textContent='Charge l’IA.';return}
+ if(teamASamples.length<2||teamBSamples.length<2){$('status').textContent='Prends au moins 2 échantillons par équipe.';return}
+ if(!ballPixels.length||!ballPos){$('status').textContent='Calibre le ballon.';return}
+ if(!v.paused)v.pause();$('status').textContent='Analyse en cours...';loop();
+}
+$('stop').onclick=()=>{running=false;$('status').textContent='Analyse arrêtée.'}
+</script>
+</body>
+</html>
