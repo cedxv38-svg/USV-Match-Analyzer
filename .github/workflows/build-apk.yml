@@ -23,12 +23,33 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build debug APK
-        run: gradle :app:assembleDebug --stacktrace
+      - name: Generate temporary release signing key
+        shell: bash
+        run: |
+          PASS=$(openssl rand -hex 16)
+          echo "USV_STORE_PASSWORD=$PASS" >> "$GITHUB_ENV"
+          echo "USV_KEY_PASSWORD=$PASS" >> "$GITHUB_ENV"
+          echo "USV_KEY_ALIAS=usvkey" >> "$GITHUB_ENV"
+          echo "USV_KEYSTORE_PATH=$RUNNER_TEMP/usv-release.jks" >> "$GITHUB_ENV"
+          keytool -genkeypair -v \
+            -keystore "$RUNNER_TEMP/usv-release.jks" \
+            -storepass "$PASS" \
+            -alias usvkey \
+            -keypass "$PASS" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 3650 \
+            -dname "CN=USV Match Analyzer, OU=USV, O=USV, C=FR"
+
+      - name: Build signed release APK
+        run: gradle :app:assembleRelease --stacktrace
+
+      - name: Rename APK
+        run: cp app/build/outputs/apk/release/app-release.apk USV-Match-Analyzer-v3-release.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: USV-Match-Analyzer-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: USV-Match-Analyzer-v3-Release
+          path: USV-Match-Analyzer-v3-release.apk
           if-no-files-found: error
