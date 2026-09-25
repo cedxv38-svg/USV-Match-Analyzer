@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.USVMatchAnalyzer" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">#123F85</item>
+        <item name="android:navigationBarColor">#123F85</item>
+        <item name="android:statusBarColor">#123F85</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>
