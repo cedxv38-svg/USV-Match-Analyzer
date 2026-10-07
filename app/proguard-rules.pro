@@ -1,1 +1,1 @@
-# No custom ProGuard rules required.
+# USV Troc — aucune règle ProGuard spécifique.

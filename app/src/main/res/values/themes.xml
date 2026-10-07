@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.USVTroc" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:colorAccent">@color/usv_yellow</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:statusBarColor">@color/usv_blue</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>
