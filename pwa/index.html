@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#064a9b">
+  <meta name="description" content="USV Troc — dons, échanges et recherches d'équipements entre membres de l'USV.">
+  <title>USV Troc</title>
+    <link rel="icon" href="assets/usv-logo.jpg">
+  
+  <style>
+:root{--blue:#064a9b;--blue2:#0c67cf;--navy:#052f63;--yellow:#ffd61a;--yellow2:#ffea70;--bg:#f4f7fb;--card:#fff;--text:#152033;--muted:#6b7485;--line:#e5eaf0;--green:#12845a;--red:#c9362b;--shadow:0 10px 30px rgba(7,55,111,.09)}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);-webkit-tap-highlight-color:transparent}button,input,select,textarea{font:inherit}button{cursor:pointer}img{max-width:100%}.hidden{display:none!important}
+.auth-view{min-height:100vh;display:grid;place-items:center;padding:72px 18px 32px;background:radial-gradient(circle at 50% 0,#0c67cf 0,#073f83 35%,#052f63 75%)}.auth-card{width:min(430px,100%);background:#fff;border-radius:28px;padding:24px 22px;box-shadow:0 24px 70px rgba(0,0,0,.28)}.auth-logo{display:block;width:110px;height:110px;border-radius:24px;object-fit:contain;background:#fff;padding:3px;margin:-72px auto 8px;box-shadow:0 10px 30px rgba(0,0,0,.18)}.auth-title{text-align:center;font-size:32px;font-weight:900;letter-spacing:-1px}.auth-title span,.brand-name span{color:#e2b600}.auth-subtitle{text-align:center;color:var(--muted);line-height:1.45;margin:5px 0 18px}.auth-subtitle strong{color:var(--navy)}.auth-tabs{display:grid;grid-template-columns:1fr 1fr;background:#eef2f7;border-radius:14px;padding:4px;margin-bottom:14px}.auth-tabs button{border:0;background:transparent;border-radius:11px;padding:10px;font-weight:800;color:#5e6877}.auth-tabs button.active{background:#fff;color:var(--navy);box-shadow:0 2px 8px rgba(0,0,0,.08)}.auth-or{text-align:center;color:#9aa4b2;font-size:11px;font-weight:800;margin:12px 0}.microcopy{font-size:11px;text-align:center;color:#9099a8;line-height:1.45;margin-bottom:0}.checkline{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#536075;line-height:1.4;margin:12px 0}.checkline input{margin-top:2px}
+.app-shell{max-width:600px;margin:0 auto;min-height:100vh;background:#fff;box-shadow:0 0 38px rgba(0,0,0,.05);position:relative}.topbar{position:sticky;top:0;z-index:30;background:linear-gradient(135deg,var(--navy),var(--blue));border-bottom:3px solid var(--yellow);padding:9px 14px}.brand-row{display:flex;align-items:center;gap:11px}.brand-logo{width:52px;height:52px;object-fit:contain;border-radius:14px;background:#fff}.brand-copy{min-width:0}.brand-name{font-size:23px;font-weight:900;color:#fff;line-height:1}.brand-location{font-size:11px;color:#dbe9fb;margin-top:5px}.icon-btn{margin-left:auto;border:0;width:38px;height:38px;border-radius:12px;background:#ffffff20;color:#fff;font-size:20px;font-weight:800}.icon-btn.light{background:#edf3fa;color:var(--navy);margin:0}.content{padding:14px 14px 96px}.page{display:none}.page.active{display:block}.hero{position:relative;overflow:hidden;padding:22px;border-radius:25px;background:linear-gradient(145deg,#052f63,#0b67cd);color:white;box-shadow:var(--shadow)}.hero:after{content:"USV";position:absolute;right:-22px;bottom:-34px;font-weight:1000;font-size:112px;color:#ffffff0e;letter-spacing:-8px}.hero h1{font-size:27px;line-height:1.08;margin:7px 0 8px;letter-spacing:-.7px;position:relative;z-index:1}.hero p{margin:0;color:#dceafd;font-size:13px;line-height:1.4;position:relative;z-index:1}.eyebrow{font-size:10px;font-weight:900;letter-spacing:1.4px;color:var(--yellow)}.eyebrow.dark{color:#6480a2}.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:13px 0 18px}.quick-card{border:0;border-radius:18px;padding:13px 10px;min-height:96px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 5px 16px rgba(6,74,155,.07)}.quick-card.give{background:var(--yellow)}.quick-card.exchange{background:#e8f2ff;color:#064a9b}.quick-card.search{background:#eef1f4;color:#172033}.quick-icon{font-size:26px}.quick-card b{display:block;font-size:15px}.quick-card small{display:block;margin-top:1px;font-size:10px;opacity:.74}.section-title,.page-heading{display:flex;align-items:center;justify-content:space-between;margin:20px 2px 9px}.section-title h2,.page-heading h2{font-size:20px;margin:3px 0 0;letter-spacing:-.3px}.text-btn{border:0;background:transparent;color:var(--blue2);font-weight:800;padding:8px}.count-pill{min-width:34px;text-align:center;background:#edf4fc;color:var(--blue);padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900}
+.search-panel{background:#f7f9fc;border:1px solid #e9edf3;padding:10px;border-radius:20px}.search-input{background:#fff;border:1px solid #dce3ec;border-radius:14px;display:flex;align-items:center;padding:0 11px}.search-input span{font-size:22px;color:#8a95a5}.search-input input{border:0;outline:0;background:transparent;width:100%;padding:12px 8px}.filter-scroll{display:flex;gap:7px;overflow:auto;padding:9px 0 2px;scrollbar-width:none}.filter-scroll::-webkit-scrollbar{display:none}.filter-chip{white-space:nowrap;border:1px solid #d9e1ea;background:#fff;color:#536075;border-radius:999px;padding:8px 11px;font-size:11px;font-weight:800}.filter-chip.active{background:var(--blue);color:white;border-color:var(--blue)}.filter-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.filter-row select{width:100%;border:1px solid #dce3ec;background:#fff;border-radius:12px;padding:9px;font-size:11px;color:#475569}
+.listing-stack{display:flex;flex-direction:column;gap:10px}.listing-card{border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:var(--shadow);overflow:hidden}.listing-main{display:grid;grid-template-columns:108px 1fr;min-height:130px}.listing-photo{width:108px;height:100%;min-height:130px;object-fit:cover;background:#edf2f7}.listing-placeholder{display:grid;place-items:center;font-size:34px}.listing-body{padding:11px;min-width:0}.listing-top{display:flex;align-items:center;gap:6px}.badge{display:inline-flex;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900}.badge.don{background:#fff0a5;color:#503f00}.badge.echange{background:#dcecff;color:#074b98}.badge.recherche{background:#ebeff4;color:#475569}.status{margin-left:auto;font-size:10px;font-weight:900;color:var(--green)}.status.reserved{color:#7a5b00}.status.completed{color:#7b8796}.listing-title{font-size:16px;font-weight:900;margin:7px 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.listing-meta{font-size:11px;color:var(--muted);line-height:1.5}.listing-owner{display:flex;align-items:center;gap:5px;margin-top:6px;font-size:11px;color:#536075}.listing-footer{display:flex;align-items:center;gap:7px;padding:9px 11px;border-top:1px solid #eef1f4}.listing-footer .btn{flex:1;padding:9px 10px;font-size:11px}.more-btn{border:0;background:#f0f4f8;border-radius:11px;padding:9px 11px;color:#536075;font-weight:900}.empty{padding:34px 18px;text-align:center;background:#f8fafc;border:1px dashed #dbe3ec;border-radius:18px;color:#778292;font-size:13px;line-height:1.55}.empty .big{display:block;font-size:32px;margin-bottom:7px}
+.form-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:15px;box-shadow:var(--shadow)}.field{margin:12px 0}.field label{display:block;font-size:12px;font-weight:900;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #d8e0ea;background:#fff;border-radius:13px;padding:12px;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:#7ba7db;box-shadow:0 0 0 3px #e8f2ff}.field textarea{min-height:105px;resize:vertical}.two-cols{display:grid;grid-template-columns:1fr 1fr;gap:9px}.type-switch{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.type-switch button{border:1px solid #d8e0ea;background:#fff;border-radius:13px;padding:11px 5px;font-size:11px;font-weight:900}.type-switch button.active{background:var(--blue);border-color:var(--blue);color:#fff}.file-input{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none}.photo-picker{border:1.5px dashed #aab8c9!important;border-radius:16px;padding:17px!important;text-align:center;background:#f8fbff;cursor:pointer}.photo-picker span{display:block;font-size:27px}.photo-picker b{display:block;margin-top:4px}.photo-picker small{display:block;font-weight:500;color:#7b8796;margin-top:2px}.photo-preview{display:block;width:100%;max-height:260px;object-fit:cover;border-radius:15px;margin-top:9px}.char-count{text-align:right;font-size:10px;color:#98a1af;margin-top:4px}.no-sale{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:14px;background:#fff8cf;border:1px solid #f2df79;margin:13px 0}.no-sale>span{font-size:22px}.no-sale b{display:block;font-size:12px}.no-sale small{display:block;color:#6a6040;margin-top:3px;line-height:1.35}.btn{border:0;border-radius:13px;padding:11px 13px;font-weight:900}.btn.primary{background:var(--yellow);color:#151515}.btn.blue{background:var(--blue2);color:#fff}.btn.soft{background:#eef4fa;color:#174a7d}.btn.danger{background:#fff0ef;color:var(--red)}.btn.demo{background:#edf5ff;color:#0a4d96;border:1px dashed #9eb8d4}.btn.wide{width:100%}.btn:disabled{opacity:.55;cursor:not-allowed}.alert{padding:11px 12px;border-radius:13px;margin:9px 0;font-size:12px}.alert.ok{background:#ebfbf3;color:#087447}.alert.err{background:#fff0ef;color:#a82f26}.alert.info{background:#edf5ff;color:#0a4d96}
+.message-list{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden}.message-row{width:100%;border:0;background:#fff;display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;text-align:left;padding:12px;border-bottom:1px solid #edf1f5}.message-row:last-child{border-bottom:0}.message-avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#e9f1fa;color:var(--blue);font-weight:900}.message-copy{min-width:0}.message-copy b{font-size:13px}.message-copy p{margin:4px 0 0;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.message-time{font-size:9px;color:#8a95a5}.thread-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}.thread-head b{display:block}.thread-head small{display:block;color:var(--muted);font-size:10px;margin-top:2px}.thread{min-height:55vh;max-height:64vh;overflow:auto;background:#f7f9fc;border:1px solid #e7ecf2;border-radius:18px;padding:12px}.bubble{max-width:82%;background:#fff;border:1px solid #e5eaf0;border-radius:16px 16px 16px 5px;padding:9px 11px;margin:7px 0;font-size:12px;line-height:1.45}.bubble.me{margin-left:auto;background:#fff4ad;border-color:#f2df6d;border-radius:16px 16px 5px 16px}.bubble-time{font-size:9px;color:#8a95a5;margin-top:4px}.message-compose{display:grid;grid-template-columns:1fr 44px;gap:7px;margin-top:9px}.message-compose input{border:1px solid #d9e1ea;border-radius:14px;padding:12px;outline:0}.send-btn{border:0;border-radius:14px;background:var(--blue);color:#fff;font-size:18px}
+.profile-card{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:17px;border-radius:22px}.profile-avatar{width:60px;height:60px;border-radius:50%;background:var(--yellow);color:var(--navy);display:grid;place-items:center;font-size:20px;font-weight:1000}.profile-card h2{margin:0;font-size:19px}.profile-card p{margin:4px 0 0;font-size:11px;color:#d9e9fb}.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.stats-grid div{text-align:center;border:1px solid var(--line);background:#fff;border-radius:15px;padding:11px}.stats-grid b{display:block;color:var(--blue);font-size:20px}.stats-grid span{font-size:9px;color:var(--muted);font-weight:800}.settings-card{border:1px solid var(--line);border-radius:20px;overflow:hidden;margin-top:14px}.settings-row{border:0;width:100%;background:#fff;display:grid;grid-template-columns:32px 1fr auto;align-items:center;text-align:left;padding:12px;border-bottom:1px solid #edf1f5}.settings-row:last-child{border-bottom:0}.settings-row>span:first-child{font-size:20px}.settings-row b{display:block;font-size:12px}.settings-row small{display:block;font-size:10px;color:var(--muted);margin-top:2px}.settings-row>span:last-child{color:#9aa4b2;font-size:18px}.danger-row b{color:var(--red)}
+.bottom-nav{position:fixed;z-index:40;bottom:0;left:50%;transform:translateX(-50%);width:min(600px,100%);display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid var(--line);padding:6px 3px max(7px,env(safe-area-inset-bottom));box-shadow:0 -8px 24px rgba(4,45,94,.05)}.bottom-nav button{border:0;background:transparent;color:#768194;padding:3px 2px}.bottom-nav button>span{display:block;font-size:20px;height:24px;line-height:24px;color:#31577f}.bottom-nav button small{font-size:9px}.bottom-nav button.active{color:var(--blue);font-weight:900}.bottom-nav button.active>span{color:var(--blue)}.bottom-nav .nav-add>span{width:40px;height:40px;line-height:36px;margin:-18px auto 2px;border-radius:50%;background:var(--yellow);border:4px solid #fff;color:var(--navy);font-size:25px;font-weight:900}.bottom-nav .nav-add small{display:block}
+.modal{position:fixed;z-index:100;inset:0;display:flex;align-items:flex-end;justify-content:center}.modal-backdrop{position:absolute;inset:0;background:rgba(5,25,49,.55);backdrop-filter:blur(2px)}.sheet{position:relative;z-index:1;width:min(600px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:28px 28px 0 0;padding:18px;box-shadow:0 -20px 50px rgba(0,0,0,.24)}.sheet-close{position:absolute;right:14px;top:14px;z-index:2;width:36px;height:36px;border:0;border-radius:50%;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.13);font-size:24px;color:#415065}.detail-image{width:100%;max-height:310px;object-fit:cover;border-radius:20px;background:#eef2f7}.detail-placeholder{height:220px;display:grid;place-items:center;font-size:56px}.detail-badges{display:flex;gap:7px;margin-top:12px}.detail-title{font-size:25px;line-height:1.1;margin:9px 0 7px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.detail-info{background:#f7f9fc;border-radius:13px;padding:10px}.detail-info small{display:block;color:var(--muted);font-size:9px}.detail-info b{display:block;font-size:12px;margin-top:3px}.detail-description{font-size:13px;line-height:1.55;color:#4d5969}.detail-owner{display:flex;align-items:center;gap:9px;border-top:1px solid #edf1f5;border-bottom:1px solid #edf1f5;padding:11px 0;margin:12px 0}.detail-owner-avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#e9f1fa;color:var(--blue);font-weight:900}.rules-sheet{padding-top:22px}.rules-hero{display:flex;gap:12px;align-items:center;padding-right:48px}.rules-hero img{width:66px;height:66px;object-fit:contain;border-radius:15px}.rules-hero h2{margin:3px 0}.rules-list{padding-left:21px}.rules-list li{margin:12px 0;font-size:13px;line-height:1.5;color:#4f5c6d}.toast{position:fixed;z-index:200;left:50%;transform:translateX(-50%);bottom:92px;width:min(430px,calc(100% - 28px));background:#102a46;color:white;padding:12px 14px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.2);font-size:12px;text-align:center}
+@media(max-width:400px){.quick-grid{grid-template-columns:1fr}.quick-card{min-height:70px;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px}.listing-main{grid-template-columns:94px 1fr}.listing-photo{width:94px}.two-cols{grid-template-columns:1fr}.type-switch button{font-size:10px}.filter-row{grid-template-columns:1fr}.hero h1{font-size:24px}}
+
+</style>
+  <script>
+// USV Troc — configuration de production.
+// Tant que SUPABASE_URL et SUPABASE_ANON_KEY sont vides, la maquette fonctionne en local.
+window.USV_TROC_CONFIG = {
+  SUPABASE_URL: "",
+  SUPABASE_ANON_KEY: "",
+  APP_NAME: "USV Troc",
+  CLUB_NAME: "USV - Saint-Geoire-en-Valdaine",
+  HANDOVER_PLACE: "Stade de La Martinette",
+  // Facultatif : si renseigné, ce code sera demandé à l'inscription.
+  INVITE_CODE: "USV1922"
+};
+
+</script>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="USV Troc">
+</head>
+<body>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <section id="authView" class="auth-view">
+    <div class="auth-card">
+      <img src="assets/usv-logo.jpg" alt="Logo USV" class="auth-logo">
+      <div class="auth-title">USV <span>Troc</span></div>
+      <p class="auth-subtitle">Donner • Échanger • Rechercher<br><strong>Jamais vendre.</strong></p>
+
+      <div class="auth-tabs" role="tablist">
+        <button id="tabLogin" class="active" type="button">Connexion</button>
+        <button id="tabRegister" type="button">Créer un compte</button>
+      </div>
+
+      <div id="authAlert"></div>
+      <div class="field"><label for="authEmail">Adresse e-mail</label><input id="authEmail" type="email" autocomplete="email" placeholder="parent@exemple.fr"></div>
+      <div class="field"><label for="authPassword">Mot de passe</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="8 caractères minimum"></div>
+
+      <div id="registerFields" class="hidden">
+        <div class="field"><label for="authName">Prénom et nom</label><input id="authName" placeholder="Ex : Cédric Morel"></div>
+        <div class="field"><label for="authCategory">Catégorie liée au club</label><select id="authCategory"><option value="">Choisir</option><option>U6/U7</option><option>U8/U9</option><option>U10/U11</option><option>U12/U13</option><option>U14/U15</option><option>U16/U17</option><option>Seniors</option><option>Vétérans</option><option>Dirigeant / Éducateur</option><option>Autre</option></select></div>
+        <div id="inviteField" class="field hidden"><label for="inviteCode">Code club</label><input id="inviteCode" inputmode="text" autocomplete="off" placeholder="Code communiqué par l'USV"></div>
+        <label class="checkline"><input id="acceptRules" type="checkbox"> <span>J'accepte les règles d'utilisation d'USV Troc.</span></label>
+      </div>
+
+      <button id="authSubmit" class="btn primary wide" type="button">Se connecter</button>
+      <div class="auth-or">ou</div>
+      <button id="demoLogin" class="btn demo wide" type="button">Tester la maquette</button>
+      <p class="microcopy">L'accès définitif est réservé aux membres et familles de l'USV.</p>
+    </div>
+  </section>
+
+  <div id="appView" class="app-shell hidden">
+    <header class="topbar">
+      <div class="brand-row">
+        <img src="assets/usv-logo.jpg" alt="USV" class="brand-logo">
+        <div class="brand-copy"><div class="brand-name">USV <span>Troc</span></div><div class="brand-location">Saint-Geoire-en-Valdaine</div></div>
+        <button id="installBtn" type="button" class="icon-btn hidden" title="Installer l'application">⬇</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section id="page-home" class="page active">
+        <div class="hero">
+          <div class="eyebrow">ENTRE MEMBRES DE L'USV</div>
+          <h1>Une seconde vie<br>pour nos équipements 💛💙</h1>
+          <p>Dons, échanges et recherches. Aucun prix, aucun paiement.</p>
+        </div>
+
+        <div class="quick-grid">
+          <button class="quick-card give" data-open-new="don" type="button"><span class="quick-icon">🎁</span><span><b>Je donne</b><small>Un équipement</small></span></button>
+          <button class="quick-card exchange" data-open-new="echange" type="button"><span class="quick-icon">🔁</span><span><b>J'échange</b><small>Un équipement</small></span></button>
+          <button class="quick-card search" data-open-new="recherche" type="button"><span class="quick-icon">🔎</span><span><b>Je recherche</b><small>Un équipement</small></span></button>
+        </div>
+
+        <div class="section-title"><div><span class="eyebrow dark">ACTUALITÉ</span><h2>Annonces récentes</h2></div><button class="text-btn" data-nav="annonces" type="button">Tout voir</button></div>
+        <div id="homeListings" class="listing-stack"></div>
+      </section>
+
+      <section id="page-annonces" class="page">
+        <div class="page-heading"><div><span class="eyebrow dark">USV TROC</span><h2>Toutes les annonces</h2></div><span id="listingCount" class="count-pill">0</span></div>
+        <div class="search-panel">
+          <div class="search-input"><span>⌕</span><input id="searchInput" placeholder="Maillot, survêtement, 12 ans…"></div>
+          <div class="filter-scroll">
+            <button class="filter-chip active" data-filter="all" type="button">Tout</button>
+            <button class="filter-chip" data-filter="don" type="button">🎁 Dons</button>
+            <button class="filter-chip" data-filter="echange" type="button">🔁 Échanges</button>
+            <button class="filter-chip" data-filter="recherche" type="button">🔎 Recherches</button>
+          </div>
+          <div class="filter-row">
+            <select id="categoryFilter"><option value="all">Toutes catégories</option><option>Survêtement</option><option>Maillot</option><option>Short</option><option>Sweat</option><option>Veste</option><option>Chaussures</option><option>Équipement gardien</option><option>Sac</option><option>Accessoire</option><option>Autre</option></select>
+            <select id="statusFilter"><option value="available">Disponibles</option><option value="all">Tous les statuts</option><option value="reserved">Réservés</option></select>
+          </div>
+        </div>
+        <div id="allListings" class="listing-stack"></div>
+      </section>
+
+      <section id="page-new" class="page">
+        <div class="page-heading"><div><span class="eyebrow dark">NOUVELLE ANNONCE</span><h2>Publier sur USV Troc</h2></div></div>
+        <div class="form-card">
+          <div id="newAlert"></div>
+          <div class="field"><label>Type d'annonce</label><div class="type-switch"><button class="active" data-type="don" type="button">🎁 Don</button><button data-type="echange" type="button">🔁 Échange</button><button data-type="recherche" type="button">🔎 Recherche</button></div></div>
+          <div id="photoField" class="field"><label for="listingPhoto">Photo</label><label class="photo-picker" for="listingPhoto"><span>📷</span><b>Ajouter une photo</b><small>Depuis l'appareil photo ou la galerie</small></label><input id="listingPhoto" class="file-input" type="file" accept="image/*"><img id="photoPreview" class="photo-preview hidden" alt="Aperçu"></div>
+          <div class="two-cols"><div class="field"><label for="listingCategory">Catégorie</label><select id="listingCategory"><option>Survêtement</option><option>Maillot</option><option>Short</option><option>Sweat</option><option>Veste</option><option>Chaussures</option><option>Équipement gardien</option><option>Sac</option><option>Accessoire</option><option>Autre</option></select></div><div class="field"><label for="listingSize">Taille</label><input id="listingSize" placeholder="12 ans, 38, M…"></div></div>
+          <div class="field"><label for="listingCondition">État</label><select id="listingCondition"><option>Neuf</option><option selected>Très bon état</option><option>Bon état</option><option>État correct</option><option>Peu importe</option></select></div>
+          <div class="field"><label for="listingTitle">Titre</label><input id="listingTitle" maxlength="80" placeholder="Ex : Survêtement USV 12 ans"></div>
+          <div class="field"><label for="listingDescription">Description</label><textarea id="listingDescription" maxlength="600" placeholder="Détails utiles, lieu de remise ou ce que vous souhaitez en échange…"></textarea><div class="char-count"><span id="descCount">0</span>/600</div></div>
+          <div class="no-sale"><span>🤝</span><div><b>USV Troc n'est pas une plateforme de vente.</b><small>Aucun prix ne peut être indiqué ni aucun paiement demandé.</small></div></div>
+          <button id="publishBtn" class="btn primary wide" type="button">Publier l'annonce</button>
+        </div>
+      </section>
+
+      <section id="page-messages" class="page">
+        <div id="conversationListView">
+          <div class="page-heading"><div><span class="eyebrow dark">ÉCHANGES</span><h2>Messages</h2></div><span id="messageCount" class="count-pill">0</span></div>
+          <div id="messageList" class="message-list"></div>
+        </div>
+        <div id="threadView" class="hidden">
+          <div class="thread-head"><button id="backMessages" class="icon-btn light" type="button">←</button><div><b id="threadPerson">Conversation</b><small id="threadListing"></small></div></div>
+          <div id="thread" class="thread"></div>
+          <div class="message-compose"><input id="messageInput" maxlength="1000" placeholder="Écrire un message…"><button id="sendMessage" class="send-btn" type="button">➤</button></div>
+        </div>
+      </section>
+
+      <section id="page-profile" class="page">
+        <div class="profile-card">
+          <div class="profile-avatar" id="profileInitials">US</div>
+          <div><h2 id="profileName">Membre USV</h2><p id="profileMeta">Membre du club</p></div>
+        </div>
+
+        <div class="stats-grid"><div><b id="myListingCount">0</b><span>Annonces</span></div><div><b id="myReservedCount">0</b><span>Réservées</span></div><div><b id="myCompletedCount">0</b><span>Terminées</span></div></div>
+
+        <div class="section-title"><div><span class="eyebrow dark">MON ESPACE</span><h2>Mes annonces</h2></div></div>
+        <div id="myListings" class="listing-stack"></div>
+
+        <div class="settings-card">
+          <button id="rulesBtn" class="settings-row" type="button"><span>📘</span><div><b>Règles USV Troc</b><small>Don, échange, recherche uniquement</small></div><span>›</span></button>
+          <button id="handoverBtn" class="settings-row" type="button"><span>📍</span><div><b>Remise conseillée</b><small id="handoverPlace">Stade de La Martinette</small></div><span>›</span></button>
+          <button id="installSettingsBtn" class="settings-row hidden" type="button"><span>📲</span><div><b>Installer USV Troc</b><small>Ajouter l'application à l'écran d'accueil</small></div><span>›</span></button>
+          <button id="logoutBtn" class="settings-row danger-row" type="button"><span>↪</span><div><b>Se déconnecter</b><small>Quitter votre compte</small></div><span>›</span></button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <button data-nav="home" class="active" type="button"><span>⌂</span><small>Accueil</small></button>
+      <button data-nav="annonces" type="button"><span>▤</span><small>Annonces</small></button>
+      <button data-nav="new" class="nav-add" type="button"><span>＋</span><small>Déposer</small></button>
+      <button data-nav="messages" type="button"><span>◉</span><small>Messages</small></button>
+      <button data-nav="profile" type="button"><span>♙</span><small>Profil</small></button>
+    </nav>
+  </div>
+
+  <div id="detailModal" class="modal hidden" aria-modal="true" role="dialog">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="sheet">
+      <button class="sheet-close" data-close-modal type="button">×</button>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+
+  <div id="rulesModal" class="modal hidden" aria-modal="true" role="dialog">
+    <div class="modal-backdrop" data-close-rules></div>
+    <div class="sheet rules-sheet">
+      <button class="sheet-close" data-close-rules type="button">×</button>
+      <div class="rules-hero"><img src="assets/usv-logo.jpg" alt="USV"><div><span class="eyebrow">CHARTE</span><h2>Règles USV Troc</h2></div></div>
+      <ol class="rules-list">
+        <li><b>Aucune vente.</b> Les annonces sont limitées au don, à l'échange ou à la recherche.</li>
+        <li><b>Équipements liés au sport et au club.</b> Pas de produits sans rapport avec l'USV ou la pratique sportive.</li>
+        <li><b>Annonce honnête.</b> Indiquer la bonne taille, l'état réel et ajouter une photo si possible.</li>
+        <li><b>Respect entre membres.</b> Les échanges restent courtois et les rendez-vous sont fixés clairement.</li>
+        <li><b>Mineurs.</b> Les échanges concernant un jeune doivent être organisés par son parent ou responsable.</li>
+        <li><b>Annonce terminée.</b> La passer en « Terminée » une fois le don ou l'échange effectué.</li>
+      </ol>
+      <button id="closeRulesBtn" class="btn primary wide" type="button">J'ai compris</button>
+    </div>
+  </div>
+<script>
+(() => {
+'use strict';
+const CFG = window.USV_TROC_CONFIG || {};
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const onlineReady = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
+const sb = onlineReady ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
+let demo = !onlineReady;
+let currentUser = null;
+let currentProfile = null;
+let currentType = 'don';
+let activeTypeFilter = 'all';
+let currentThread = null;
+let installPrompt = null;
+let detailListing = null;
+
+const esc = s => (s ?? '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = d => new Intl.DateTimeFormat('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(d));
+const initials = n => (n || 'US').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
+const statusLabel = s => s==='reserved'?'Réservé':s==='completed'?'Terminé':'Disponible';
+const typeLabel = t => t==='don'?'Je donne':t==='echange'?"J'échange":'Je recherche';
+const iconFor = c => /maillot|sweat|veste|surv/i.test(c)?'👕':/chauss/i.test(c)?'👟':/short/i.test(c)?'🩳':/sac/i.test(c)?'🎒':/gardien/i.test(c)?'🧤':'⚽';
+const noSalePattern = /\b(?:€|euros?|eur|prix|vendre|vente|paypal|virement|cash|espèces?)\b/i;
+
+const seedListings = [
+ {id:'d1',user_id:'u2',owner_name:'Thomas',type:'don',title:'Survêtement USV',category:'Survêtement',size:'12 ans',condition:'Très bon état',description:'Porté une seule saison. À récupérer au stade de La Martinette.',image_url:'',status:'available',created_at:new Date(Date.now()-4200000).toISOString()},
+ {id:'d2',user_id:'u3',owner_name:'Julie',type:'echange',title:'Maillot USV',category:'Maillot',size:'10 ans',condition:'Bon état',description:'Échange contre un maillot taille 12 ans.',image_url:'',status:'available',created_at:new Date(Date.now()-8500000).toISOString()},
+ {id:'d3',user_id:'u4',owner_name:'Alexandre',type:'recherche',title:'Short USV',category:'Short',size:'14 ans',condition:'Peu importe',description:'Recherche un short pour la saison en cours.',image_url:'',status:'available',created_at:new Date(Date.now()-14200000).toISOString()},
+ {id:'d4',user_id:'u5',owner_name:'Sophie',type:'don',title:'Sac de sport USV',category:'Sac',size:'Unique',condition:'Bon état',description:'Quelques traces d’usage mais parfaitement fonctionnel.',image_url:'',status:'available',created_at:new Date(Date.now()-24600000).toISOString()}
+];
+
+const store = {
+ get listings(){ try{return JSON.parse(localStorage.getItem('usv_final_listings')) || seedListings;}catch{return seedListings;} },
+ set listings(v){ localStorage.setItem('usv_final_listings',JSON.stringify(v)); },
+ get messages(){ try{return JSON.parse(localStorage.getItem('usv_final_messages')) || [];}catch{return [];} },
+ set messages(v){ localStorage.setItem('usv_final_messages',JSON.stringify(v)); },
+ get reports(){ try{return JSON.parse(localStorage.getItem('usv_final_reports')) || [];}catch{return [];} },
+ set reports(v){ localStorage.setItem('usv_final_reports',JSON.stringify(v)); }
+};
+
+function toast(msg){ const el=$('#toast'); el.textContent=msg; el.classList.remove('hidden'); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.add('hidden'),2600); }
+function alertBox(el,msg,kind='info'){ if(!el)return; el.innerHTML=`<div class="alert ${kind}">${esc(msg)}</div>`; setTimeout(()=>{ if(el)el.innerHTML=''; },3500); }
+function setBusy(btn,busy,label){ if(!btn)return; if(busy){btn.dataset.label=btn.textContent;btn.disabled=true;btn.textContent=label||'Patientez…';}else{btn.disabled=false;btn.textContent=btn.dataset.label||btn.textContent;} }
+
+async function boot(){
+ bindUI();
+ $('#handoverPlace').textContent=CFG.HANDOVER_PLACE || 'Stade de La Martinette';
+ if(CFG.INVITE_CODE) $('#inviteField').classList.remove('hidden');
+ if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+ if(onlineReady){
+   const {data} = await sb.auth.getSession();
+   if(data.session){ await useSession(data.session); }
+   else showAuth();
+   sb.auth.onAuthStateChange(async(_evt,session)=>{ if(session) await useSession(session); else showAuth(); });
+ } else showAuth();
+}
+
+function bindUI(){
+ $('#tabLogin').addEventListener('click',()=>setAuthMode(false));
+ $('#tabRegister').addEventListener('click',()=>setAuthMode(true));
+ $('#authSubmit').addEventListener('click',authSubmit);
+ $('#demoLogin').addEventListener('click',demoLogin);
+ $$('[data-nav]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.nav)));
+ $$('[data-open-new]').forEach(b=>b.addEventListener('click',()=>{setListingType(b.dataset.openNew);go('new');}));
+ $$('[data-type]').forEach(b=>b.addEventListener('click',()=>setListingType(b.dataset.type)));
+ $$('.filter-chip').forEach(b=>b.addEventListener('click',()=>{activeTypeFilter=b.dataset.filter;$$('.filter-chip').forEach(x=>x.classList.toggle('active',x===b));renderListings();}));
+ $('#searchInput').addEventListener('input',renderListings);
+ $('#categoryFilter').addEventListener('change',renderListings);
+ $('#statusFilter').addEventListener('change',renderListings);
+ $('#listingPhoto').addEventListener('change',previewPhoto);
+ $('#listingDescription').addEventListener('input',()=>$('#descCount').textContent=$('#listingDescription').value.length);
+ $('#publishBtn').addEventListener('click',publishListing);
+ $('#logoutBtn').addEventListener('click',logout);
+ $('#backMessages').addEventListener('click',showConversationList);
+ $('#sendMessage').addEventListener('click',sendMessage);
+ $('#messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
+ $('#rulesBtn').addEventListener('click',()=>$('#rulesModal').classList.remove('hidden'));
+ $('#closeRulesBtn').addEventListener('click',closeRules);
+ $$('[data-close-rules]').forEach(x=>x.addEventListener('click',closeRules));
+ $$('[data-close-modal]').forEach(x=>x.addEventListener('click',closeDetail));
+ $('#handoverBtn').addEventListener('click',()=>toast(`Remise conseillée : ${CFG.HANDOVER_PLACE || 'Stade de La Martinette'}`));
+ $('#installBtn').addEventListener('click',installApp);
+ $('#installSettingsBtn').addEventListener('click',installApp);
+ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('#installBtn').classList.remove('hidden');$('#installSettingsBtn').classList.remove('hidden');});
+}
+
+function setAuthMode(register){
+ $('#registerFields').classList.toggle('hidden',!register);
+ $('#tabLogin').classList.toggle('active',!register);
+ $('#tabRegister').classList.toggle('active',register);
+ $('#authSubmit').textContent=register?'Créer mon compte':'Se connecter';
+ $('#authSubmit').dataset.register=register?'1':'0';
+ $('#authPassword').autocomplete=register?'new-password':'current-password';
+}
+
+async function authSubmit(){
+ const register=$('#authSubmit').dataset.register==='1';
+ const email=$('#authEmail').value.trim();
+ const password=$('#authPassword').value;
+ if(!email || !/^\S+@\S+\.\S+$/.test(email)) return alertBox($('#authAlert'),'Saisissez une adresse e-mail valide.','err');
+ if(password.length<8) return alertBox($('#authAlert'),'Le mot de passe doit contenir au moins 8 caractères.','err');
+ if(register){
+   if(CFG.INVITE_CODE && $('#inviteCode').value.trim()!==CFG.INVITE_CODE) return alertBox($('#authAlert'),'Le code club est incorrect.','err');
+   if(!$('#acceptRules').checked) return alertBox($('#authAlert'),'Vous devez accepter les règles USV Troc.','err');
+ }
+ if(!onlineReady) return demoLogin();
+ const btn=$('#authSubmit'); setBusy(btn,true,register?'Création…':'Connexion…');
+ try{
+   if(register){
+     const full_name=$('#authName').value.trim() || email.split('@')[0];
+     const category=$('#authCategory').value;
+     const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name,category}}});
+     if(error) throw error;
+     if(data.user) await sb.from('profiles').upsert({id:data.user.id,full_name,category});
+     alertBox($('#authAlert'),'Compte créé. Vérifiez votre e-mail si une confirmation est demandée.','ok');
+   }else{
+     const {data,error}=await sb.auth.signInWithPassword({email,password});
+     if(error) throw error;
+     await useSession(data.session);
+   }
+ }catch(e){ alertBox($('#authAlert'),e.message||'Impossible de se connecter.','err'); }
+ finally{ setBusy(btn,false); }
+}
+
+function demoLogin(){
+ demo=true; currentUser={id:'demo-user',email:'demo@usv.local'}; currentProfile={full_name:'Membre USV',category:'Mode démo'}; showApp();
+}
+async function useSession(session){
+ demo=false; currentUser=session.user;
+ const {data}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();
+ currentProfile=data||{full_name:currentUser.user_metadata?.full_name||currentUser.email,category:currentUser.user_metadata?.category||''};
+ showApp(); subscribeRealtime();
+}
+function showAuth(){ $('#authView').classList.remove('hidden'); $('#appView').classList.add('hidden'); }
+function showApp(){
+ $('#authView').classList.add('hidden'); $('#appView').classList.remove('hidden');
+ $('#profileName').textContent=currentProfile?.full_name||'Membre USV';
+ $('#profileMeta').textContent=currentProfile?.category?`Catégorie : ${currentProfile.category}`:'Membre du club';
+ $('#profileInitials').textContent=initials(currentProfile?.full_name);
+ go('home');
+}
+async function logout(){ if(onlineReady&&!demo) await sb.auth.signOut(); currentUser=null;currentProfile=null;showAuth(); }
+
+function go(name){
+ $$('.page').forEach(p=>p.classList.toggle('active',p.id===`page-${name}`));
+ $$('.bottom-nav button').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));
+ window.scrollTo({top:0,behavior:'smooth'});
+ if(name==='home'||name==='annonces') renderListings();
+ if(name==='profile') renderProfile();
+ if(name==='messages') renderMessages();
+}
+function setListingType(type){
+ currentType=type;
+ $$('[data-type]').forEach(b=>b.classList.toggle('active',b.dataset.type===type));
+ $('#photoField').classList.toggle('hidden',type==='recherche');
+ $('#listingCondition').value=type==='recherche'?'Peu importe':'Très bon état';
+}
+function previewPhoto(){
+ const file=$('#listingPhoto').files?.[0];
+ const img=$('#photoPreview');
+ if(!file){img.classList.add('hidden');return;}
+ if(file.size>8*1024*1024){toast('Photo trop lourde : 8 Mo maximum.');$('#listingPhoto').value='';return;}
+ img.src=URL.createObjectURL(file);img.classList.remove('hidden');
+}
+
+async function fetchListings(){
+ if(demo) return [...store.listings].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+ const {data,error}=await sb.from('listings').select('*,profiles(full_name)').order('created_at',{ascending:false});
+ if(error){console.error(error);toast('Impossible de charger les annonces.');return[];}
+ return (data||[]).map(x=>({...x,owner_name:x.profiles?.full_name||'Membre USV'}));
+}
+
+function listingCard(x,compact=false){
+ const own=x.user_id===currentUser?.id;
+ const photo=x.image_url?`<img class="listing-photo" src="${esc(x.image_url)}" alt="${esc(x.title)}">`:`<div class="listing-photo listing-placeholder">${iconFor(x.category)}</div>`;
+ const primary = own ? '' : (x.type==='recherche' ? `<button class="btn blue" data-contact="${esc(x.id)}">J'ai ce qu'il faut</button>` : `<button class="btn primary" data-contact="${esc(x.id)}">Je suis intéressé(e)</button>`);
+ const ownerActions = own ? `<button class="btn soft" data-status="${esc(x.id)}">${x.status==='available'?'Réserver':x.status==='reserved'?'Terminer':'Réactiver'}</button>` : '';
+ return `<article class="listing-card" data-id="${esc(x.id)}">
+   <div class="listing-main" data-detail="${esc(x.id)}">${photo}<div class="listing-body">
+      <div class="listing-top"><span class="badge ${esc(x.type)}">${typeLabel(x.type)}</span><span class="status ${esc(x.status)}">${statusLabel(x.status)}</span></div>
+      <div class="listing-title">${esc(x.title)}</div>
+      <div class="listing-meta">${esc(x.category)} • Taille ${esc(x.size||'non précisée')}<br>État : ${esc(x.condition||'non précisé')}</div>
+      <div class="listing-owner">👤 ${esc(x.owner_name||'Membre USV')}</div>
+   </div></div>
+   ${compact?'':`<div class="listing-footer">${primary}${ownerActions}<button class="more-btn" data-detail="${esc(x.id)}" type="button">Détails</button></div>`}
+ </article>`;
+}
+
+async function renderListings(){
+ const all=await fetchListings();
+ const q=($('#searchInput')?.value||'').trim().toLowerCase();
+ const cat=$('#categoryFilter')?.value||'all';
+ const stat=$('#statusFilter')?.value||'available';
+ const filtered=all.filter(x=>(activeTypeFilter==='all'||x.type===activeTypeFilter)&&(cat==='all'||x.category===cat)&&(stat==='all'||x.status===stat)&&(!q||[x.title,x.category,x.size,x.description,x.owner_name].join(' ').toLowerCase().includes(q)));
+ $('#listingCount').textContent=filtered.length;
+ $('#allListings').innerHTML=filtered.length?filtered.map(x=>listingCard(x)).join(''):`<div class="empty"><span class="big">🔎</span>Aucune annonce ne correspond à votre recherche.</div>`;
+ $('#homeListings').innerHTML=all.filter(x=>x.status!=='completed').slice(0,3).map(x=>listingCard(x,true)).join('')||`<div class="empty"><span class="big">🤝</span>Aucune annonce pour le moment.</div>`;
+ bindListingActions();
+}
+function bindListingActions(){
+ $$('[data-detail]').forEach(el=>el.onclick=e=>{e.stopPropagation();openDetail(el.dataset.detail);});
+ $$('[data-contact]').forEach(el=>el.onclick=e=>{e.stopPropagation();contactListing(el.dataset.contact);});
+ $$('[data-status]').forEach(el=>el.onclick=e=>{e.stopPropagation();cycleStatus(el.dataset.status);});
+}
+
+async function openDetail(id){
+ const all=await fetchListings(); const x=all.find(a=>String(a.id)===String(id)); if(!x)return;
+ detailListing=x;
+ const photo=x.image_url?`<img class="detail-image" src="${esc(x.image_url)}" alt="${esc(x.title)}">`:`<div class="detail-image detail-placeholder">${iconFor(x.category)}</div>`;
+ const own=x.user_id===currentUser?.id;
+ const action=own?`<button class="btn soft wide" data-detail-status="${esc(x.id)}">${x.status==='available'?'Marquer réservé':x.status==='reserved'?'Marquer terminé':'Rendre disponible'}</button>`:(x.type==='recherche'?`<button class="btn blue wide" data-detail-contact="${esc(x.id)}">J'ai ce qu'il faut</button>`:`<button class="btn primary wide" data-detail-contact="${esc(x.id)}">Je suis intéressé(e)</button>`);
+ $('#detailContent').innerHTML=`${photo}<div class="detail-badges"><span class="badge ${esc(x.type)}">${typeLabel(x.type)}</span><span class="status ${esc(x.status)}">${statusLabel(x.status)}</span></div><h2 class="detail-title">${esc(x.title)}</h2><div class="detail-grid"><div class="detail-info"><small>Catégorie</small><b>${esc(x.category)}</b></div><div class="detail-info"><small>Taille</small><b>${esc(x.size||'Non précisée')}</b></div><div class="detail-info"><small>État</small><b>${esc(x.condition||'Non précisé')}</b></div><div class="detail-info"><small>Publié</small><b>${fmt(x.created_at)}</b></div></div><p class="detail-description">${esc(x.description||'Aucune description supplémentaire.')}</p><div class="detail-owner"><div class="detail-owner-avatar">${initials(x.owner_name)}</div><div><b>${esc(x.owner_name||'Membre USV')}</b><div class="listing-meta">Membre USV</div></div></div>${action}${own?'<button class="btn danger wide" data-detail-delete style="margin-top:8px">Supprimer l’annonce</button>':'<button class="btn soft wide" data-report style="margin-top:8px">Signaler l’annonce</button>'}`;
+ $('#detailModal').classList.remove('hidden');
+ const c=$('[data-detail-contact]');if(c)c.onclick=()=>contactListing(c.dataset.detailContact);
+ const s=$('[data-detail-status]');if(s)s.onclick=()=>cycleStatus(s.dataset.detailStatus);
+ const d=$('[data-detail-delete]');if(d)d.onclick=()=>deleteListing(x.id);
+ const r=$('[data-report]');if(r)r.onclick=()=>reportListing(x.id);
+}
+function closeDetail(){detailListing=null;$('#detailModal').classList.add('hidden');}
+function closeRules(){$('#rulesModal').classList.add('hidden');}
+
+async function compressImage(file,max=1400,quality=.78){
+ if(!file)return '';
+ const img=await createImageBitmap(file);
+ const scale=Math.min(1,max/Math.max(img.width,img.height));
+ const w=Math.max(1,Math.round(img.width*scale)),h=Math.max(1,Math.round(img.height*scale));
+ const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+ canvas.getContext('2d').drawImage(img,0,0,w,h);
+ return await new Promise(res=>canvas.toBlob(b=>res(b),'image/jpeg',quality));
+}
+async function uploadPhoto(file){
+ if(!file)return '';
+ const blob=await compressImage(file);
+ if(demo){ return URL.createObjectURL(blob); }
+ const path=`${currentUser.id}/${crypto.randomUUID()}.jpg`;
+ const {error}=await sb.storage.from('listing-photos').upload(path,blob,{contentType:'image/jpeg',upsert:false});
+ if(error)throw error;
+ const {data}=sb.storage.from('listing-photos').getPublicUrl(path); return data.publicUrl;
+}
+
+async function publishListing(){
+ const title=$('#listingTitle').value.trim(), category=$('#listingCategory').value, size=$('#listingSize').value.trim(), condition=$('#listingCondition').value, description=$('#listingDescription').value.trim();
+ if(!title||!size) return alertBox($('#newAlert'),'Indiquez au minimum un titre et une taille.','err');
+ if(noSalePattern.test(`${title} ${description}`)) return alertBox($('#newAlert'),'USV Troc n’autorise aucune vente, aucun prix ni aucun paiement.','err');
+ const btn=$('#publishBtn');setBusy(btn,true,'Publication…');
+ try{
+   let image_url=''; const file=$('#listingPhoto').files?.[0]; if(file&&currentType!=='recherche') image_url=await uploadPhoto(file);
+   const rec={user_id:currentUser.id,type:currentType,title,category,size,condition,description,image_url,status:'available',created_at:new Date().toISOString(),owner_name:currentProfile?.full_name||'Membre USV'};
+   if(demo){rec.id='d'+Date.now();const arr=store.listings;arr.unshift(rec);store.listings=arr;}
+   else{const payload={...rec};delete payload.owner_name;const {error}=await sb.from('listings').insert(payload);if(error)throw error;}
+   resetForm();toast('Annonce publiée !');go('home');
+ }catch(e){alertBox($('#newAlert'),e.message||'Impossible de publier l’annonce.','err');}
+ finally{setBusy(btn,false);}
+}
+function resetForm(){
+ $('#listingTitle').value='';$('#listingSize').value='';$('#listingDescription').value='';$('#descCount').textContent='0';$('#listingPhoto').value='';$('#photoPreview').classList.add('hidden');setListingType('don');
+}
+
+async function cycleStatus(id){
+ const all=await fetchListings();const x=all.find(a=>String(a.id)===String(id));if(!x)return;
+ const next=x.status==='available'?'reserved':x.status==='reserved'?'completed':'available';
+ if(demo){const arr=store.listings;const i=arr.findIndex(a=>String(a.id)===String(id));if(i>=0){arr[i].status=next;store.listings=arr;}}
+ else{const {error}=await sb.from('listings').update({status:next}).eq('id',id).eq('user_id',currentUser.id);if(error)return toast('Modification impossible.');}
+ closeDetail();toast(`Annonce : ${statusLabel(next)}`);renderListings();renderProfile();
+}
+async function deleteListing(id){
+ if(!confirm('Supprimer définitivement cette annonce ?'))return;
+ if(demo){store.listings=store.listings.filter(a=>String(a.id)!==String(id));}
+ else{const {error}=await sb.from('listings').delete().eq('id',id).eq('user_id',currentUser.id);if(error)return toast('Suppression impossible.');}
+ closeDetail();toast('Annonce supprimée.');renderListings();renderProfile();
+}
+async function reportListing(id){
+ if(!detailListing)return;
+ if(demo){const a=store.reports;a.push({id:'r'+Date.now(),listing_id:id,reporter_id:currentUser.id,created_at:new Date().toISOString()});store.reports=a;}
+ else{await sb.from('reports').insert({listing_id:id,reporter_id:currentUser.id,reason:'Signalement utilisateur'});}
+ closeDetail();toast('Signalement transmis à l’USV.');
+}
+
+async function contactListing(id){
+ const all=await fetchListings(); const x=all.find(a=>String(a.id)===String(id)); if(!x||x.user_id===currentUser.id)return;
+ currentThread={listingId:x.id,otherId:x.user_id,otherName:x.owner_name||'Membre USV',title:x.title};
+ closeDetail();go('messages');showThread();await renderThread();
+}
+async function getMessages(){
+ if(demo)return store.messages;
+ const {data,error}=await sb.from('messages').select('*').or(`sender_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`).order('created_at',{ascending:true});
+ if(error){console.error(error);return[];}return data||[];
+}
+async function renderMessages(){
+ showConversationList();
+ const msgs=await getMessages();
+ const groups=new Map();
+ for(const m of msgs){
+   const other=m.sender_id===currentUser.id?m.recipient_id:m.sender_id;
+   const key=`${m.listing_id}|${other}`;
+   groups.set(key,{...m,otherId:other,otherName:m.other_name||'Membre USV',title:m.listing_title||'Annonce'});
+ }
+ const rows=[...groups.values()].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+ $('#messageCount').textContent=rows.length;
+ $('#messageList').innerHTML=rows.length?rows.map(m=>`<button class="message-row" data-thread-key="${esc(m.listing_id)}|${esc(m.otherId)}" type="button"><div class="message-avatar">${initials(m.otherName)}</div><div class="message-copy"><b>${esc(m.otherName)}</b><p>${esc(m.body)}</p></div><span class="message-time">${fmt(m.created_at)}</span></button>`).join(''):`<div class="empty" style="border:0;border-radius:0"><span class="big">💬</span>Aucune conversation pour le moment.<br>Ouvrez une annonce puis cliquez sur « Je suis intéressé(e) ».</div>`;
+ $$('[data-thread-key]').forEach(b=>b.onclick=()=>{const [listingId,otherId]=b.dataset.threadKey.split('|');const m=rows.find(x=>String(x.listing_id)===listingId&&String(x.otherId)===otherId);currentThread={listingId:m.listing_id,otherId:m.otherId,otherName:m.otherName,title:m.title};showThread();renderThread();});
+}
+function showConversationList(){$('#threadView').classList.add('hidden');$('#conversationListView').classList.remove('hidden');currentThread=null;}
+function showThread(){$('#conversationListView').classList.add('hidden');$('#threadView').classList.remove('hidden');$('#threadPerson').textContent=currentThread?.otherName||'Conversation';$('#threadListing').textContent=currentThread?.title||'';}
+async function renderThread(){
+ if(!currentThread)return;
+ const msgs=(await getMessages()).filter(m=>String(m.listing_id)===String(currentThread.listingId)&&((String(m.sender_id)===String(currentUser.id)&&String(m.recipient_id)===String(currentThread.otherId))||(String(m.sender_id)===String(currentThread.otherId)&&String(m.recipient_id)===String(currentUser.id))));
+ $('#thread').innerHTML=msgs.length?msgs.map(m=>`<div class="bubble ${String(m.sender_id)===String(currentUser.id)?'me':''}">${esc(m.body)}<div class="bubble-time">${fmt(m.created_at)}</div></div>`).join(''):`<div class="empty"><span class="big">👋</span>Commencez la conversation pour organiser le don ou l’échange.</div>`;
+ $('#thread').scrollTop=$('#thread').scrollHeight;
+}
+async function sendMessage(){
+ const body=$('#messageInput').value.trim();if(!body||!currentThread)return;
+ if(noSalePattern.test(body)) return toast('Pas de prix ni de paiement sur USV Troc.');
+ const rec={listing_id:currentThread.listingId,sender_id:currentUser.id,recipient_id:currentThread.otherId,body,created_at:new Date().toISOString(),other_name:currentThread.otherName,listing_title:currentThread.title};
+ if(demo){const a=store.messages;a.push({...rec,id:'m'+Date.now()});store.messages=a;}
+ else{const {error}=await sb.from('messages').insert({listing_id:rec.listing_id,sender_id:rec.sender_id,recipient_id:rec.recipient_id,body:rec.body});if(error)return toast('Message non envoyé.');}
+ $('#messageInput').value='';await renderThread();
+}
+
+async function renderProfile(){
+ const all=await fetchListings(); const mine=all.filter(x=>x.user_id===currentUser.id);
+ $('#myListingCount').textContent=mine.length;$('#myReservedCount').textContent=mine.filter(x=>x.status==='reserved').length;$('#myCompletedCount').textContent=mine.filter(x=>x.status==='completed').length;
+ $('#myListings').innerHTML=mine.length?mine.map(x=>listingCard(x)).join(''):`<div class="empty"><span class="big">📦</span>Vous n'avez encore publié aucune annonce.</div>`;bindListingActions();
+}
+
+async function installApp(){ if(!installPrompt)return toast('Utilisez « Ajouter à l’écran d’accueil » dans le menu de votre navigateur.'); installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('#installBtn').classList.add('hidden');$('#installSettingsBtn').classList.add('hidden'); }
+function subscribeRealtime(){
+ if(!onlineReady||demo)return;
+ sb.channel('usv-troc-live').on('postgres_changes',{event:'*',schema:'public',table:'listings'},()=>{if($('#page-home').classList.contains('active')||$('#page-annonces').classList.contains('active'))renderListings();}).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},p=>{if(p.new.recipient_id===currentUser.id||p.new.sender_id===currentUser.id){if($('#page-messages').classList.contains('active')){currentThread?renderThread():renderMessages();}}}).subscribe();
+}
+
+window.addEventListener('DOMContentLoaded',boot);
+})();
+
+</script>
+</body>
+</html>
