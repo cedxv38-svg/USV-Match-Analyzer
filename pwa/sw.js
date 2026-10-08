@@ -1,4 +1,4 @@
-const CACHE='usv-troc-v4';
+const CACHE='usv-troc-v6';
 const FALLBACK='./index.html';
 self.addEventListener('install',event=>{
   self.skipWaiting();
