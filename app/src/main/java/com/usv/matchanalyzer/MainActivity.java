@@ -56,6 +56,12 @@ public class MainActivity extends Activity {
                 if ("file".equalsIgnoreCase(scheme) || "about".equalsIgnoreCase(scheme)) {
                     return false;
                 }
+                if ("https".equalsIgnoreCase(scheme) &&
+                    "cedxv38-svg.github.io".equalsIgnoreCase(uri.getHost()) &&
+                    uri.getPath() != null &&
+                    uri.getPath().startsWith("/USV-Match-Analyzer/pwa/")) {
+                    return false;
+                }
                 if ("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme)) {
                     try {
                         startActivity(new Intent(Intent.ACTION_VIEW, uri));
@@ -81,7 +87,7 @@ public class MainActivity extends Activity {
         });
 
         if (savedInstanceState == null) {
-            webView.loadUrl("file:///android_asset/index.html");
+            webView.loadUrl("https://cedxv38-svg.github.io/USV-Match-Analyzer/pwa/?android=1");
         } else {
             webView.restoreState(savedInstanceState);
         }
