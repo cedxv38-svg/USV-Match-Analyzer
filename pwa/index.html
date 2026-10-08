@@ -55,8 +55,8 @@ window.USV_TROC_CONFIG = {
       </div>
 
       <div id="authAlert"></div>
-      <div class="field"><label for="authEmail">Adresse e-mail</label><input id="authEmail" type="email" autocomplete="email" placeholder="parent@exemple.fr"></div>
-      <div class="field"><label for="authPassword">Mot de passe</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="8 caractères minimum"></div>
+      <div class="field"><label for="authEmail">Adresse e-mail</label><input id="authEmail" name="username" type="email" autocomplete="username" placeholder="parent@exemple.fr"></div>
+      <div class="field"><label for="authPassword">Mot de passe</label><input id="authPassword" name="password" type="password" autocomplete="current-password" placeholder="8 caractères minimum"></div>\n      <label id="rememberLine" class="checkline"><input id="rememberLogin" type="checkbox" checked> <span>Mémoriser ma connexion sur cet appareil</span></label>
 
       <div id="registerFields" class="hidden">
         <div class="field"><label for="authName">Prénom et nom</label><input id="authName" placeholder="Ex : Cédric Morel"></div>
@@ -210,7 +210,29 @@ const CFG = window.USV_TROC_CONFIG || {};
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const onlineReady = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
-const sb = onlineReady ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
+const rememberStorage = {
+  getItem(key){
+    const remember = localStorage.getItem('usv_remember_login') !== '0';
+    return remember ? localStorage.getItem(key) : sessionStorage.getItem(key);
+  },
+  setItem(key,value){
+    const remember = localStorage.getItem('usv_remember_login') !== '0';
+    if(remember){ localStorage.setItem(key,value); sessionStorage.removeItem(key); }
+    else { sessionStorage.setItem(key,value); localStorage.removeItem(key); }
+  },
+  removeItem(key){
+    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
+  }
+};
+const sb = onlineReady ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storage: rememberStorage
+  }
+}) : null;
 let demo = false;
 let currentUser = null;
 let currentProfile = null;
@@ -247,6 +269,7 @@ function setBusy(btn,busy,label){ if(!btn)return; if(busy){btn.dataset.label=btn
 async function boot(){
  try{ const old=JSON.parse(localStorage.getItem('usv_final_listings')||'[]'); if(Array.isArray(old) && old.some(x=>['d1','d2','d3','d4'].includes(String(x.id)))) localStorage.setItem('usv_final_listings','[]'); }catch{}
  bindUI();
+ if($('#rememberLogin')) $('#rememberLogin').checked = localStorage.getItem('usv_remember_login') !== '0';
  $('#handoverPlace').textContent=CFG.HANDOVER_PLACE || 'Stade de La Martinette';
  if(CFG.INVITE_CODE) $('#inviteField').classList.remove('hidden');
  if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
@@ -262,6 +285,12 @@ function bindUI(){
  $('#tabLogin').addEventListener('click',()=>setAuthMode(false));
  $('#tabRegister').addEventListener('click',()=>setAuthMode(true));
  $('#authSubmit').addEventListener('click',authSubmit);
+ $('#rememberLogin')?.addEventListener('change',e=>{
+   localStorage.setItem('usv_remember_login', e.target.checked ? '1' : '0');
+   if(!e.target.checked){
+     Object.keys(localStorage).filter(k=>k.startsWith('sb-')&&k.includes('-auth-token')).forEach(k=>localStorage.removeItem(k));
+   }
+ });
  $$('[data-nav]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.nav)));
  $$('[data-open-new]').forEach(b=>b.addEventListener('click',()=>{setListingType(b.dataset.openNew);go('new');}));
  $$('[data-type]').forEach(b=>b.addEventListener('click',()=>setListingType(b.dataset.type)));
@@ -288,6 +317,7 @@ function bindUI(){
 
 function setAuthMode(register){
  $('#registerFields').classList.toggle('hidden',!register);
+ $('#rememberLine')?.classList.toggle('hidden',register);
  $('#tabLogin').classList.toggle('active',!register);
  $('#tabRegister').classList.toggle('active',register);
  $('#authSubmit').textContent=register?'Créer mon compte':'Se connecter';
@@ -316,6 +346,7 @@ async function authSubmit(){
      if(data.user) await sb.from('profiles').update({full_name,category}).eq('id',data.user.id);
      alertBox($('#authAlert'),'Compte créé. Vérifiez votre e-mail si une confirmation est demandée.','ok');
    }else{
+     localStorage.setItem('usv_remember_login', $('#rememberLogin')?.checked === false ? '0' : '1');
      const {data,error}=await sb.auth.signInWithPassword({email,password});
      if(error) throw error;
      await useSession(data.session);
