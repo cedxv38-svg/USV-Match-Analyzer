@@ -42,8 +42,36 @@ window.USV_TROC_CONFIG = {
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="USV Troc">
+
+<style id="usv-install-style">
+#usvInstallBar{position:sticky;top:0;z-index:9999;display:flex;align-items:center;gap:9px;padding:10px 12px;background:#ffd61a;color:#052f63;border-bottom:1px solid #e8c300;font-family:Arial,sans-serif;font-weight:800}
+#usvInstallBar .txt{flex:1;font-size:13px;line-height:1.2}
+#usvInstallBar button{border:0;border-radius:12px;padding:9px 12px;font-weight:900}
+#usvInstallBtn{background:#064a9b;color:#fff}
+#usvInstallHelp{background:#fff;color:#064a9b}
+#usvInstallMsg{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.62);padding:20px;align-items:center;justify-content:center}
+#usvInstallMsg .box{max-width:420px;background:#fff;border-radius:22px;padding:20px;color:#152033;font-family:Arial,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+#usvInstallMsg h2{margin:0 0 10px;color:#052f63}
+#usvInstallMsg p{line-height:1.5;margin:8px 0}
+#usvInstallMsg .close{width:100%;margin-top:12px;border:0;border-radius:12px;padding:11px;background:#064a9b;color:#fff;font-weight:900}
+@media (display-mode: standalone){#usvInstallBar{display:none!important}}
+</style>
 </head>
 <body>
+
+<div id="usvInstallBar">
+  <div class="txt">📲 Installer <strong>USV Troc</strong> sur ce téléphone</div>
+  <button id="usvInstallBtn" type="button">Installer</button>
+  <button id="usvInstallHelp" type="button">Aide</button>
+</div>
+<div id="usvInstallMsg" role="dialog" aria-modal="true">
+  <div class="box">
+    <h2>Installer USV Troc</h2>
+    <p><strong>Sur Samsung / Android :</strong> ouvre cette page dans <strong>Chrome</strong>, appuie sur <strong>⋮</strong> en haut à droite puis sur <strong>Ajouter à l'écran d'accueil</strong> ou <strong>Installer l'application</strong>.</p>
+    <p>Si tu es dans ChatGPT, appuie d'abord sur le menu de la page puis <strong>Ouvrir dans Chrome</strong>.</p>
+    <button class="close" type="button" onclick="document.getElementById('usvInstallMsg').style.display='none'">J'ai compris</button>
+  </div>
+</div>
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
   <section id="authView" class="auth-view">
@@ -535,6 +563,37 @@ function subscribeRealtime(){
 window.addEventListener('DOMContentLoaded',boot);
 })();
 
+</script>
+
+<script id="usv-install-script">
+let usvDeferredPrompt=null;
+const usvBar=document.getElementById('usvInstallBar');
+const usvBtn=document.getElementById('usvInstallBtn');
+const usvHelp=document.getElementById('usvInstallHelp');
+const usvMsg=document.getElementById('usvInstallMsg');
+
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  usvDeferredPrompt=e;
+  if(usvBar) usvBar.style.display='flex';
+});
+window.addEventListener('appinstalled',()=>{
+  if(usvBar) usvBar.style.display='none';
+  usvDeferredPrompt=null;
+});
+if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true){
+  if(usvBar) usvBar.style.display='none';
+}
+if(usvBtn) usvBtn.addEventListener('click',async()=>{
+  if(usvDeferredPrompt){
+    usvDeferredPrompt.prompt();
+    await usvDeferredPrompt.userChoice;
+    usvDeferredPrompt=null;
+  }else{
+    usvMsg.style.display='flex';
+  }
+});
+if(usvHelp) usvHelp.addEventListener('click',()=>{usvMsg.style.display='flex';});
 </script>
 </body>
 </html>
