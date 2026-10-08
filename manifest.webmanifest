@@ -1,25 +1,31 @@
 {
-  "id": "./pwa/",
+  "id": "/USV-Match-Analyzer/pwa/",
   "name": "USV Troc",
   "short_name": "USV Troc",
   "description": "Dons, échanges et recherches de vêtements et équipements entre membres de l'USV.",
-  "start_url": "./pwa/",
-  "scope": "./pwa/",
+  "start_url": "/USV-Match-Analyzer/pwa/",
+  "scope": "/USV-Match-Analyzer/pwa/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#ffffff",
   "theme_color": "#073B83",
   "orientation": "portrait-primary",
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "./pwa/icon.svg",
-      "sizes": "any",
+      "src": "/USV-Match-Analyzer/pwa/icon.svg",
+      "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "./pwa/icon.svg",
-      "sizes": "any",
+      "src": "/USV-Match-Analyzer/pwa/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/USV-Match-Analyzer/pwa/icon.svg",
+      "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "maskable"
     }
