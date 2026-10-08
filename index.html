@@ -33,7 +33,8 @@ window.USV_TROC_CONFIG = {
   CLUB_NAME: "USV - Saint-Geoire-en-Valdaine",
   HANDOVER_PLACE: "Stade de La Martinette",
   // Facultatif : si renseigné, ce code sera demandé à l'inscription.
-  INVITE_CODE: "USV1922"
+  INVITE_CODE: "USV1922",
+  ADMIN_EMAILS: ["cedxv@live.fr"]
 };
 
 </script>
@@ -65,7 +66,6 @@ window.USV_TROC_CONFIG = {
 
       <button id="authSubmit" class="btn primary wide" type="button">Se connecter</button>
       <div class="auth-or">ou</div>
-      <button id="demoLogin" class="btn demo wide" type="button">Tester la maquette</button>
       <p class="microcopy">L'accès définitif est réservé aux membres et familles de l'USV.</p>
     </div>
   </section>
@@ -145,13 +145,20 @@ window.USV_TROC_CONFIG = {
       <section id="page-profile" class="page">
         <div class="profile-card">
           <div class="profile-avatar" id="profileInitials">US</div>
-          <div><h2 id="profileName">Membre USV</h2><p id="profileMeta">Membre du club</p></div>
+          <div><h2 id="profileName">Membre USV</h2><p id="profileMeta">Membre du club</p><p id="adminBadge" class="hidden" style="display:inline-block;margin-top:6px;background:#ffd61a;color:#052f63;font-weight:900;font-size:10px;padding:5px 8px;border-radius:999px">ADMINISTRATEUR</p></div>
         </div>
 
         <div class="stats-grid"><div><b id="myListingCount">0</b><span>Annonces</span></div><div><b id="myReservedCount">0</b><span>Réservées</span></div><div><b id="myCompletedCount">0</b><span>Terminées</span></div></div>
 
         <div class="section-title"><div><span class="eyebrow dark">MON ESPACE</span><h2>Mes annonces</h2></div></div>
         <div id="myListings" class="listing-stack"></div>
+
+        <div id="adminPanel" class="form-card hidden" style="margin:14px 0;border:2px solid #ffd61a">
+          <span class="eyebrow dark">ADMINISTRATION</span>
+          <h2 style="margin:6px 0 8px">Espace administrateur</h2>
+          <p style="margin:0;color:#6b7485;font-size:12px;line-height:1.5">Tu peux modérer toutes les annonces, supprimer une annonce et traiter les signalements.</p>
+          <div style="margin-top:10px;padding:10px;border-radius:12px;background:#fff8cf;font-size:12px"><b>Version réelle :</b> la base de données en ligne doit maintenant être connectée.</div>
+        </div>
 
         <div class="settings-card">
           <button id="rulesBtn" class="settings-row" type="button"><span>📘</span><div><b>Règles USV Troc</b><small>Don, échange, recherche uniquement</small></div><span>›</span></button>
@@ -203,7 +210,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const onlineReady = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
 const sb = onlineReady ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
-let demo = !onlineReady;
+let demo = false;
 let currentUser = null;
 let currentProfile = null;
 let currentType = 'don';
@@ -219,16 +226,12 @@ const statusLabel = s => s==='reserved'?'Réservé':s==='completed'?'Terminé':'
 const typeLabel = t => t==='don'?'Je donne':t==='echange'?"J'échange":'Je recherche';
 const iconFor = c => /maillot|sweat|veste|surv/i.test(c)?'👕':/chauss/i.test(c)?'👟':/short/i.test(c)?'🩳':/sac/i.test(c)?'🎒':/gardien/i.test(c)?'🧤':'⚽';
 const noSalePattern = /\b(?:€|euros?|eur|prix|vendre|vente|paypal|virement|cash|espèces?)\b/i;
+const isAdmin = () => !!currentUser && (CFG.ADMIN_EMAILS||[]).map(x=>x.toLowerCase()).includes((currentUser.email||'').toLowerCase());
 
-const seedListings = [
- {id:'d1',user_id:'u2',owner_name:'Thomas',type:'don',title:'Survêtement USV',category:'Survêtement',size:'12 ans',condition:'Très bon état',description:'Porté une seule saison. À récupérer au stade de La Martinette.',image_url:'',status:'available',created_at:new Date(Date.now()-4200000).toISOString()},
- {id:'d2',user_id:'u3',owner_name:'Julie',type:'echange',title:'Maillot USV',category:'Maillot',size:'10 ans',condition:'Bon état',description:'Échange contre un maillot taille 12 ans.',image_url:'',status:'available',created_at:new Date(Date.now()-8500000).toISOString()},
- {id:'d3',user_id:'u4',owner_name:'Alexandre',type:'recherche',title:'Short USV',category:'Short',size:'14 ans',condition:'Peu importe',description:'Recherche un short pour la saison en cours.',image_url:'',status:'available',created_at:new Date(Date.now()-14200000).toISOString()},
- {id:'d4',user_id:'u5',owner_name:'Sophie',type:'don',title:'Sac de sport USV',category:'Sac',size:'Unique',condition:'Bon état',description:'Quelques traces d’usage mais parfaitement fonctionnel.',image_url:'',status:'available',created_at:new Date(Date.now()-24600000).toISOString()}
-];
+const seedListings = [];
 
 const store = {
- get listings(){ try{return JSON.parse(localStorage.getItem('usv_final_listings')) || seedListings;}catch{return seedListings;} },
+ get listings(){ try{return JSON.parse(localStorage.getItem('usv_final_listings')) || [];}catch{return [];} },
  set listings(v){ localStorage.setItem('usv_final_listings',JSON.stringify(v)); },
  get messages(){ try{return JSON.parse(localStorage.getItem('usv_final_messages')) || [];}catch{return [];} },
  set messages(v){ localStorage.setItem('usv_final_messages',JSON.stringify(v)); },
@@ -241,6 +244,7 @@ function alertBox(el,msg,kind='info'){ if(!el)return; el.innerHTML=`<div class="
 function setBusy(btn,busy,label){ if(!btn)return; if(busy){btn.dataset.label=btn.textContent;btn.disabled=true;btn.textContent=label||'Patientez…';}else{btn.disabled=false;btn.textContent=btn.dataset.label||btn.textContent;} }
 
 async function boot(){
+ try{ const old=JSON.parse(localStorage.getItem('usv_final_listings')||'[]'); if(Array.isArray(old) && old.some(x=>['d1','d2','d3','d4'].includes(String(x.id)))) localStorage.setItem('usv_final_listings','[]'); }catch{}
  bindUI();
  $('#handoverPlace').textContent=CFG.HANDOVER_PLACE || 'Stade de La Martinette';
  if(CFG.INVITE_CODE) $('#inviteField').classList.remove('hidden');
@@ -257,7 +261,6 @@ function bindUI(){
  $('#tabLogin').addEventListener('click',()=>setAuthMode(false));
  $('#tabRegister').addEventListener('click',()=>setAuthMode(true));
  $('#authSubmit').addEventListener('click',authSubmit);
- $('#demoLogin').addEventListener('click',demoLogin);
  $$('[data-nav]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.nav)));
  $$('[data-open-new]').forEach(b=>b.addEventListener('click',()=>{setListingType(b.dataset.openNew);go('new');}));
  $$('[data-type]').forEach(b=>b.addEventListener('click',()=>setListingType(b.dataset.type)));
@@ -301,7 +304,7 @@ async function authSubmit(){
    if(CFG.INVITE_CODE && $('#inviteCode').value.trim()!==CFG.INVITE_CODE) return alertBox($('#authAlert'),'Le code club est incorrect.','err');
    if(!$('#acceptRules').checked) return alertBox($('#authAlert'),'Vous devez accepter les règles USV Troc.','err');
  }
- if(!onlineReady) return demoLogin();
+ if(!onlineReady) return alertBox($('#authAlert'),'La version réelle doit être reliée au serveur USV avant la première connexion.','info');
  const btn=$('#authSubmit'); setBusy(btn,true,register?'Création…':'Connexion…');
  try{
    if(register){
@@ -320,9 +323,7 @@ async function authSubmit(){
  finally{ setBusy(btn,false); }
 }
 
-function demoLogin(){
- demo=true; currentUser={id:'demo-user',email:'demo@usv.local'}; currentProfile={full_name:'Membre USV',category:'Mode démo'}; showApp();
-}
+function demoLogin(){ alertBox($('#authAlert'),'Le mode démo a été supprimé.','info'); }
 async function useSession(session){
  demo=false; currentUser=session.user;
  const {data}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();
@@ -335,6 +336,8 @@ function showApp(){
  $('#profileName').textContent=currentProfile?.full_name||'Membre USV';
  $('#profileMeta').textContent=currentProfile?.category?`Catégorie : ${currentProfile.category}`:'Membre du club';
  $('#profileInitials').textContent=initials(currentProfile?.full_name);
+ $('#adminBadge')?.classList.toggle('hidden',!isAdmin());
+ $('#adminPanel')?.classList.toggle('hidden',!isAdmin());
  go('home');
 }
 async function logout(){ if(onlineReady&&!demo) await sb.auth.signOut(); currentUser=null;currentProfile=null;showAuth(); }
@@ -407,7 +410,7 @@ async function openDetail(id){
  const photo=x.image_url?`<img class="detail-image" src="${esc(x.image_url)}" alt="${esc(x.title)}">`:`<div class="detail-image detail-placeholder">${iconFor(x.category)}</div>`;
  const own=x.user_id===currentUser?.id;
  const action=own?`<button class="btn soft wide" data-detail-status="${esc(x.id)}">${x.status==='available'?'Marquer réservé':x.status==='reserved'?'Marquer terminé':'Rendre disponible'}</button>`:(x.type==='recherche'?`<button class="btn blue wide" data-detail-contact="${esc(x.id)}">J'ai ce qu'il faut</button>`:`<button class="btn primary wide" data-detail-contact="${esc(x.id)}">Je suis intéressé(e)</button>`);
- $('#detailContent').innerHTML=`${photo}<div class="detail-badges"><span class="badge ${esc(x.type)}">${typeLabel(x.type)}</span><span class="status ${esc(x.status)}">${statusLabel(x.status)}</span></div><h2 class="detail-title">${esc(x.title)}</h2><div class="detail-grid"><div class="detail-info"><small>Catégorie</small><b>${esc(x.category)}</b></div><div class="detail-info"><small>Taille</small><b>${esc(x.size||'Non précisée')}</b></div><div class="detail-info"><small>État</small><b>${esc(x.condition||'Non précisé')}</b></div><div class="detail-info"><small>Publié</small><b>${fmt(x.created_at)}</b></div></div><p class="detail-description">${esc(x.description||'Aucune description supplémentaire.')}</p><div class="detail-owner"><div class="detail-owner-avatar">${initials(x.owner_name)}</div><div><b>${esc(x.owner_name||'Membre USV')}</b><div class="listing-meta">Membre USV</div></div></div>${action}${own?'<button class="btn danger wide" data-detail-delete style="margin-top:8px">Supprimer l’annonce</button>':'<button class="btn soft wide" data-report style="margin-top:8px">Signaler l’annonce</button>'}`;
+ $('#detailContent').innerHTML=`${photo}<div class="detail-badges"><span class="badge ${esc(x.type)}">${typeLabel(x.type)}</span><span class="status ${esc(x.status)}">${statusLabel(x.status)}</span></div><h2 class="detail-title">${esc(x.title)}</h2><div class="detail-grid"><div class="detail-info"><small>Catégorie</small><b>${esc(x.category)}</b></div><div class="detail-info"><small>Taille</small><b>${esc(x.size||'Non précisée')}</b></div><div class="detail-info"><small>État</small><b>${esc(x.condition||'Non précisé')}</b></div><div class="detail-info"><small>Publié</small><b>${fmt(x.created_at)}</b></div></div><p class="detail-description">${esc(x.description||'Aucune description supplémentaire.')}</p><div class="detail-owner"><div class="detail-owner-avatar">${initials(x.owner_name)}</div><div><b>${esc(x.owner_name||'Membre USV')}</b><div class="listing-meta">Membre USV</div></div></div>${action}${canDelete?'<button class="btn danger wide" data-detail-delete style="margin-top:8px">Supprimer l’annonce</button>':'<button class="btn soft wide" data-report style="margin-top:8px">Signaler l’annonce</button>'}`;
  $('#detailModal').classList.remove('hidden');
  const c=$('[data-detail-contact]');if(c)c.onclick=()=>contactListing(c.dataset.detailContact);
  const s=$('[data-detail-status]');if(s)s.onclick=()=>cycleStatus(s.dataset.detailStatus);
