@@ -134,6 +134,14 @@ window.USV_TROC_CONFIG = {
       <section id="page-messages" class="page">
         <div id="conversationListView">
           <div class="page-heading"><div><span class="eyebrow dark">ÉCHANGES</span><h2>Messages</h2></div><span id="messageCount" class="count-pill">0</span></div>
+          <button id="newMessageBtn" class="btn primary wide" type="button" style="margin-bottom:10px">💬 Nouveau message</button>
+          <div id="newMessageBox" class="form-card hidden" style="margin:0 0 10px">
+            <div class="field"><label for="newMessageMember">Choisir un membre USV</label><select id="newMessageMember"><option value="">Chargement…</option></select></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <button id="cancelNewMessage" class="btn soft" type="button">Annuler</button>
+              <button id="startNewMessage" class="btn blue" type="button">Écrire</button>
+            </div>
+          </div>
           <div id="messageList" class="message-list"></div>
         </div>
         <div id="threadView" class="hidden">
@@ -303,6 +311,9 @@ function bindUI(){
  $('#publishBtn').addEventListener('click',publishListing);
  $('#logoutBtn').addEventListener('click',logout);
  $('#backMessages').addEventListener('click',showConversationList);
+ $('#newMessageBtn').addEventListener('click',openNewMessageBox);
+ $('#cancelNewMessage').addEventListener('click',()=>$('#newMessageBox').classList.add('hidden'));
+ $('#startNewMessage').addEventListener('click',startDirectMessage);
  $('#sendMessage').addEventListener('click',sendMessage);
  $('#messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
  $('#rulesBtn').addEventListener('click',()=>$('#rulesModal').classList.remove('hidden'));
@@ -514,6 +525,28 @@ async function contactListing(id){
  const all=await fetchListings(); const x=all.find(a=>String(a.id)===String(id)); if(!x||x.user_id===currentUser.id)return;
  currentThread={listingId:x.id,otherId:x.user_id,otherName:x.owner_name||'Membre USV',title:x.title};
  closeDetail();go('messages');showThread();await renderThread();
+}
+
+async function openNewMessageBox(){
+ const box=$('#newMessageBox'), select=$('#newMessageMember');
+ box.classList.remove('hidden');
+ select.innerHTML='<option value="">Chargement…</option>';
+ const {data,error}=await sb.from('profiles').select('id,full_name').neq('id',currentUser.id).order('full_name');
+ if(error){select.innerHTML='<option value="">Impossible de charger les membres</option>';return toast('Impossible de charger les membres.');}
+ const members=data||[];
+ select.innerHTML='<option value="">Choisir un membre…</option>'+members.map(m=>`<option value="${esc(m.id)}">${esc(m.full_name||'Membre USV')}</option>`).join('');
+}
+
+async function startDirectMessage(){
+ const select=$('#newMessageMember');
+ const otherId=select.value;
+ if(!otherId)return toast('Choisissez un membre.');
+ const opt=select.options[select.selectedIndex];
+ currentThread={listingId:null,otherId,otherName:opt.textContent||'Membre USV',title:'Message direct'};
+ $('#newMessageBox').classList.add('hidden');
+ showThread();
+ await renderThread();
+ setTimeout(()=>$('#messageInput')?.focus(),50);
 }
 async function getMessages(){
  if(demo)return store.messages;
