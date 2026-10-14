@@ -406,7 +406,7 @@ async function fetchListings(){
 function listingCard(x,compact=false){
  const own=x.user_id===currentUser?.id;
  const photo=x.image_url?`<img class="listing-photo" src="${esc(x.image_url)}" alt="${esc(x.title)}">`:`<div class="listing-photo listing-placeholder">${iconFor(x.category)}</div>`;
- const primary = own ? '' : (x.type==='recherche' ? `<button class="btn blue" data-contact="${esc(x.id)}">J'ai ce qu'il faut</button>` : `<button class="btn primary" data-contact="${esc(x.id)}">Je suis intéressé(e)</button>`);
+ const primary = own ? '' : `<button class="btn primary" data-contact="${esc(x.id)}">💬 Contacter le membre</button>`;
  const ownerActions = own ? `<button class="btn soft" data-status="${esc(x.id)}">${x.status==='available'?'Réserver':x.status==='reserved'?'Terminer':'Réactiver'}</button>` : '';
  return `<article class="listing-card" data-id="${esc(x.id)}">
    <div class="listing-main" data-detail="${esc(x.id)}">${photo}<div class="listing-body">
@@ -415,7 +415,7 @@ function listingCard(x,compact=false){
       <div class="listing-meta">${esc(x.category)} • Taille ${esc(x.size||'non précisée')}<br>État : ${esc(x.condition||'non précisé')}</div>
       <div class="listing-owner">👤 ${esc(x.owner_name||'Membre USV')}</div>
    </div></div>
-   ${compact?'':`<div class="listing-footer">${primary}${ownerActions}<button class="more-btn" data-detail="${esc(x.id)}" type="button">Détails</button></div>`}
+   <div class="listing-footer">${primary}${ownerActions}<button class="more-btn" data-detail="${esc(x.id)}" type="button">Détails</button></div>
  </article>`;
 }
 
@@ -442,7 +442,7 @@ async function openDetail(id){
  const photo=x.image_url?`<img class="detail-image" src="${esc(x.image_url)}" alt="${esc(x.title)}">`:`<div class="detail-image detail-placeholder">${iconFor(x.category)}</div>`;
  const own=x.user_id===currentUser?.id;
  const canDelete=own||isAdmin();
- const action=own?`<button class="btn soft wide" data-detail-status="${esc(x.id)}">${x.status==='available'?'Marquer réservé':x.status==='reserved'?'Marquer terminé':'Rendre disponible'}</button>`:(x.type==='recherche'?`<button class="btn blue wide" data-detail-contact="${esc(x.id)}">J'ai ce qu'il faut</button>`:`<button class="btn primary wide" data-detail-contact="${esc(x.id)}">Je suis intéressé(e)</button>`);
+ const action=own?`<button class="btn soft wide" data-detail-status="${esc(x.id)}">${x.status==='available'?'Marquer réservé':x.status==='reserved'?'Marquer terminé':'Rendre disponible'}</button>`:`<button class="btn primary wide" data-detail-contact="${esc(x.id)}">💬 Contacter le membre</button>`;
  $('#detailContent').innerHTML=`${photo}<div class="detail-badges"><span class="badge ${esc(x.type)}">${typeLabel(x.type)}</span><span class="status ${esc(x.status)}">${statusLabel(x.status)}</span></div><h2 class="detail-title">${esc(x.title)}</h2><div class="detail-grid"><div class="detail-info"><small>Catégorie</small><b>${esc(x.category)}</b></div><div class="detail-info"><small>Taille</small><b>${esc(x.size||'Non précisée')}</b></div><div class="detail-info"><small>État</small><b>${esc(x.condition||'Non précisé')}</b></div><div class="detail-info"><small>Publié</small><b>${fmt(x.created_at)}</b></div></div><p class="detail-description">${esc(x.description||'Aucune description supplémentaire.')}</p><div class="detail-owner"><div class="detail-owner-avatar">${initials(x.owner_name)}</div><div><b>${esc(x.owner_name||'Membre USV')}</b><div class="listing-meta">Membre USV</div></div></div>${action}${canDelete?'<button class="btn danger wide" data-detail-delete style="margin-top:8px">Supprimer l’annonce</button>':'<button class="btn soft wide" data-report style="margin-top:8px">Signaler l’annonce</button>'}`;
  $('#detailModal').classList.remove('hidden');
  const c=$('[data-detail-contact]');if(c)c.onclick=()=>contactListing(c.dataset.detailContact);
