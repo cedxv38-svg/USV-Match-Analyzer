@@ -87,7 +87,7 @@ public class MainActivity extends Activity {
         });
 
         if (savedInstanceState == null) {
-            webView.loadUrl("https://cedxv38-svg.github.io/USV-Match-Analyzer/pwa/?android=1");
+            webView.loadUrl("file:///android_asset/index.html?android=1");
         } else {
             webView.restoreState(savedInstanceState);
         }
