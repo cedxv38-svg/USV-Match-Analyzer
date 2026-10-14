@@ -24,45 +24,43 @@ jobs:
         with:
           gradle-version: '8.11.1'
 
-      - name: Generate temporary signing key
+      - name: Restore permanent Play upload keystore
         shell: bash
+        env:
+          USV_KEYSTORE_B64: ${{ secrets.USV_KEYSTORE_B64 }}
         run: |
-          PASS=$(openssl rand -hex 16)
-          echo "USV_STORE_PASSWORD=$PASS" >> "$GITHUB_ENV"
-          echo "USV_KEY_PASSWORD=$PASS" >> "$GITHUB_ENV"
-          echo "USV_KEY_ALIAS=usvtroc" >> "$GITHUB_ENV"
-          echo "USV_KEYSTORE_PATH=$RUNNER_TEMP/usv-troc-release.jks" >> "$GITHUB_ENV"
-          keytool -genkeypair -v \
-            -keystore "$RUNNER_TEMP/usv-troc-release.jks" \
-            -storepass "$PASS" \
-            -alias usvtroc \
-            -keypass "$PASS" \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 3650 \
-            -dname "CN=USV Troc, OU=USV, O=USV, C=FR"
+          test -n "$USV_KEYSTORE_B64" || { echo "Missing USV_KEYSTORE_B64 secret"; exit 1; }
+          echo "$USV_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/usv-troc-upload.jks"
+          echo "USV_KEYSTORE_PATH=$RUNNER_TEMP/usv-troc-upload.jks" >> "$GITHUB_ENV"
 
       - name: Build signed APK and AAB
+        env:
+          USV_STORE_PASSWORD: ${{ secrets.USV_STORE_PASSWORD }}
+          USV_KEY_PASSWORD: ${{ secrets.USV_KEY_PASSWORD }}
+          USV_KEY_ALIAS: ${{ secrets.USV_KEY_ALIAS }}
         run: |
+          test -n "$USV_STORE_PASSWORD" || { echo "Missing USV_STORE_PASSWORD secret"; exit 1; }
+          test -n "$USV_KEY_PASSWORD" || { echo "Missing USV_KEY_PASSWORD secret"; exit 1; }
+          test -n "$USV_KEY_ALIAS" || { echo "Missing USV_KEY_ALIAS secret"; exit 1; }
           gradle :app:assembleRelease :app:bundleRelease --stacktrace
 
       - name: Rename outputs
         run: |
-          cp app/build/outputs/apk/release/app-release.apk USV-Troc-v1.0.2.apk
-          cp app/build/outputs/bundle/release/app-release.aab USV-Troc-v1.0.2.aab
+          cp app/build/outputs/apk/release/app-release.apk USV-Troc-v1.0.6.apk
+          cp app/build/outputs/bundle/release/app-release.aab USV-Troc-v1.0.6.aab
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: USV-Troc-v1.0.2-APK
-          path: USV-Troc-v1.0.2.apk
+          name: USV-Troc-v1.0.6-APK
+          path: USV-Troc-v1.0.6.apk
           if-no-files-found: error
           retention-days: 30
 
       - name: Upload Play Store AAB
         uses: actions/upload-artifact@v4
         with:
-          name: USV-Troc-v1.0.2-PlayStore-AAB
-          path: USV-Troc-v1.0.2.aab
+          name: USV-Troc-v1.0.6-PlayStore-AAB
+          path: USV-Troc-v1.0.6.aab
           if-no-files-found: error
           retention-days: 30
