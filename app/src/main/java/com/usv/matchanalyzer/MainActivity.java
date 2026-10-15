@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.pm.PackageManager;
 import android.content.Intent;
+import android.content.ClipData;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -124,6 +125,7 @@ public class MainActivity extends Activity {
         Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
         galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
         galleryIntent.setType("image/*");
+        galleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
@@ -152,7 +154,12 @@ public class MainActivity extends Activity {
 
         Uri[] result = null;
         if (resultCode == RESULT_OK) {
-            if (data != null && data.getData() != null) {
+            if (data != null && data.getClipData() != null) {
+                ClipData clip = data.getClipData();
+                int count = Math.min(clip.getItemCount(), 5);
+                result = new Uri[count];
+                for (int i = 0; i < count; i++) result[i] = clip.getItemAt(i).getUri();
+            } else if (data != null && data.getData() != null) {
                 result = new Uri[]{data.getData()};
             } else if (cameraUri != null) {
                 result = new Uri[]{cameraUri};
