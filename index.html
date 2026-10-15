@@ -254,6 +254,7 @@ let currentProfile = null;
 let currentType = 'don';
 let activeTypeFilter = 'all';
 let currentThread = null;
+let replyToMessage = null;
 let installPrompt = null;
 let detailListing = null;
 
@@ -614,21 +615,38 @@ async function renderMessages(){
  $('#messageList').innerHTML=rows.length?rows.map(m=>`<button class="message-row" data-thread-key="${esc(m.listing_id)}|${esc(m.otherId)}" type="button"><div class="message-avatar">${initials(m.otherName)}</div><div class="message-copy"><b>${esc(m.otherName)}</b><p>${esc(m.body)}</p></div><span class="message-time">${fmt(m.created_at)}</span></button>`).join(''):`<div class="empty" style="border:0;border-radius:0"><span class="big">💬</span>Aucune conversation pour le moment.<br>Ouvrez une annonce puis cliquez sur « Je suis intéressé(e) ».</div>`;
  $$('[data-thread-key]').forEach(b=>b.onclick=()=>{const [listingId,otherId]=b.dataset.threadKey.split('|');const m=rows.find(x=>String(x.listing_id)===listingId&&String(x.otherId)===otherId);currentThread={listingId:m.listing_id,otherId:m.otherId,otherName:m.otherName,title:m.title};showThread();renderThread();});
 }
-function showConversationList(){$('#threadView').classList.add('hidden');$('#conversationListView').classList.remove('hidden');currentThread=null;}
+function showConversationList(){$('#threadView').classList.add('hidden');$('#conversationListView').classList.remove('hidden');currentThread=null;replyToMessage=null;$('#messageInput').placeholder='Écrire un message…';}
 function showThread(){$('#conversationListView').classList.add('hidden');$('#threadView').classList.remove('hidden');$('#threadPerson').textContent=currentThread?.otherName||'Conversation';$('#threadListing').textContent=currentThread?.title||'';}
 async function renderThread(){
  if(!currentThread)return;
  const msgs=(await getMessages()).filter(m=>String(m.listing_id)===String(currentThread.listingId)&&((String(m.sender_id)===String(currentUser.id)&&String(m.recipient_id)===String(currentThread.otherId))||(String(m.sender_id)===String(currentThread.otherId)&&String(m.recipient_id)===String(currentUser.id))));
- $('#thread').innerHTML=msgs.length?msgs.map(m=>`<div class="bubble ${String(m.sender_id)===String(currentUser.id)?'me':''}">${esc(m.body)}<div class="bubble-time">${fmt(m.created_at)}</div></div>`).join(''):`<div class="empty"><span class="big">👋</span>Commencez la conversation pour organiser le don ou l’échange.</div>`;
+ const byId=new Map(msgs.map(m=>[String(m.id),m]));
+ $('#thread').innerHTML=msgs.length?msgs.map(m=>{
+   const mine=String(m.sender_id)===String(currentUser.id);
+   const parent=m.reply_to_id?byId.get(String(m.reply_to_id)):null;
+   const quote=parent?`<div style="font-size:10px;padding:6px 8px;margin-bottom:6px;border-left:3px solid #9fb4cc;background:rgba(255,255,255,.55);border-radius:7px"><b>Réponse à :</b> ${esc(parent.body.slice(0,120))}</div>`:'';
+   const replyBtn=!mine?`<button type="button" data-reply-message="${esc(m.id)}" style="border:0;background:transparent;color:#174a7d;font-size:10px;font-weight:800;padding:5px 0 0">↩ Répondre</button>`:'';
+   return `<div class="bubble ${mine?'me':''}">${quote}${esc(m.body)}<div class="bubble-time">${fmt(m.created_at)}</div>${replyBtn}</div>`;
+ }).join(''):`<div class="empty"><span class="big">👋</span>Commencez la conversation pour organiser le don ou l’échange.</div>`;
+ $('[data-reply-message]').forEach(b=>b.onclick=()=>{
+   const m=byId.get(String(b.dataset.replyMessage));
+   if(!m)return;
+   replyToMessage=m;
+   $('#messageInput').placeholder='Répondre à : '+m.body.slice(0,45);
+   $('#messageInput').focus();
+ });
  $('#thread').scrollTop=$('#thread').scrollHeight;
 }
 async function sendMessage(){
  const body=$('#messageInput').value.trim();if(!body||!currentThread)return;
  if(noSalePattern.test(body)) return toast('Pas de prix ni de paiement sur USV Troc.');
- const rec={listing_id:currentThread.listingId,sender_id:currentUser.id,recipient_id:currentThread.otherId,body,created_at:new Date().toISOString(),other_name:currentThread.otherName,listing_title:currentThread.title};
+ const rec={listing_id:currentThread.listingId,sender_id:currentUser.id,recipient_id:currentThread.otherId,body,reply_to_id:replyToMessage?.id||null,created_at:new Date().toISOString(),other_name:currentThread.otherName,listing_title:currentThread.title};
  if(demo){const a=store.messages;a.push({...rec,id:'m'+Date.now()});store.messages=a;}
- else{const {error}=await sb.from('messages').insert({listing_id:rec.listing_id,sender_id:rec.sender_id,recipient_id:rec.recipient_id,body:rec.body});if(error)return toast('Message non envoyé.');}
- $('#messageInput').value='';await renderThread();
+ else{const {error}=await sb.from('messages').insert({listing_id:rec.listing_id,sender_id:rec.sender_id,recipient_id:rec.recipient_id,body:rec.body,reply_to_id:rec.reply_to_id});if(error)return toast('Message non envoyé.');}
+ $('#messageInput').value='';
+ $('#messageInput').placeholder='Écrire un message…';
+ replyToMessage=null;
+ await renderThread();
 }
 
 async function renderProfile(){
