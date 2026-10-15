@@ -1,10 +1,15 @@
 package com.usv.matchanalyzer;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
+import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.webkit.ValueCallback;
@@ -32,6 +37,8 @@ public class MainActivity extends Activity {
 
         getWindow().setStatusBarColor(Color.rgb(7, 59, 131));
         getWindow().setNavigationBarColor(Color.WHITE);
+
+        setupNotifications();
 
         webView = new WebView(this);
         webView.setBackgroundColor(Color.WHITE);
@@ -90,6 +97,26 @@ public class MainActivity extends Activity {
             webView.loadUrl("file:///android_asset/index.html?android=1");
         } else {
             webView.restoreState(savedInstanceState);
+        }
+    }
+
+    private void setupNotifications() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                NotificationChannel channel = new NotificationChannel(
+                    "usv_troc_messages",
+                    "Messages USV Troc",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                );
+                channel.setDescription("Notifications des messages et échanges USV Troc");
+                manager.createNotificationChannel(channel);
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= 33 &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1302);
         }
     }
 
