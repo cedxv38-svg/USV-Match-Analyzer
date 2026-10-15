@@ -66,6 +66,13 @@ window.USV_TROC_CONFIG = {
       </div>
 
       <button id="authSubmit" class="btn primary wide" type="button">Se connecter</button>
+      <button id="forgotPasswordBtn" class="btn soft wide" type="button" style="margin-top:8px">Mot de passe oublié ?</button>
+      <div id="recoveryPanel" class="hidden" style="margin-top:10px;padding:12px;border:1px solid #d9e1ea;border-radius:14px;background:#f7f9fc">
+        <b>Choisir un nouveau mot de passe</b>
+        <div class="field" style="margin-top:8px"><label for="newPassword">Nouveau mot de passe</label><input id="newPassword" type="password" autocomplete="new-password" placeholder="8 caractères minimum"></div>
+        <div class="field"><label for="newPassword2">Confirmer le mot de passe</label><input id="newPassword2" type="password" autocomplete="new-password" placeholder="Retapez le mot de passe"></div>
+        <button id="saveNewPasswordBtn" class="btn blue wide" type="button">Enregistrer le nouveau mot de passe</button>
+      </div>
       <div class="auth-or">ou</div>
       <p class="microcopy">L'accès définitif est réservé aux membres et familles de l'USV.</p>
     </div>
@@ -285,7 +292,16 @@ async function boot(){
    const {data} = await sb.auth.getSession();
    if(data.session){ await useSession(data.session); }
    else showAuth();
-   sb.auth.onAuthStateChange(async(_evt,session)=>{ if(session) await useSession(session); else showAuth(); });
+   sb.auth.onAuthStateChange(async(evt,session)=>{
+     if(evt==='PASSWORD_RECOVERY'){
+       showAuth();
+       $('#recoveryPanel').classList.remove('hidden');
+       $('#forgotPasswordBtn').classList.add('hidden');
+       setTimeout(()=>$('#newPassword')?.focus(),50);
+       return;
+     }
+     if(session) await useSession(session); else showAuth();
+   });
  } else showAuth();
 }
 
@@ -293,6 +309,8 @@ function bindUI(){
  $('#tabLogin').addEventListener('click',()=>setAuthMode(false));
  $('#tabRegister').addEventListener('click',()=>setAuthMode(true));
  $('#authSubmit').addEventListener('click',authSubmit);
+ $('#forgotPasswordBtn').addEventListener('click',forgotPassword);
+ $('#saveNewPasswordBtn').addEventListener('click',saveNewPassword);
  $('#rememberLogin')?.addEventListener('change',e=>{
    localStorage.setItem('usv_remember_login', e.target.checked ? '1' : '0');
    if(!e.target.checked){
@@ -334,6 +352,35 @@ function setAuthMode(register){
  $('#authSubmit').textContent=register?'Créer mon compte':'Se connecter';
  $('#authSubmit').dataset.register=register?'1':'0';
  $('#authPassword').autocomplete=register?'new-password':'current-password';
+}
+
+async function forgotPassword(){
+ const email=$('#authEmail').value.trim();
+ if(!email || !/^\S+@\S+\.\S+$/.test(email)) return alertBox($('#authAlert'),'Saisissez d’abord votre adresse e-mail.','err');
+ try{
+   const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://cedxv38-svg.github.io/USV-Match-Analyzer/pwa/'});
+   if(error) throw error;
+   alertBox($('#authAlert'),'Un e-mail de réinitialisation vient de vous être envoyé. Pensez à vérifier les spams.','ok');
+ }catch(e){
+   alertBox($('#authAlert'),e.message||'Impossible d’envoyer le mail de réinitialisation.','err');
+ }
+}
+
+async function saveNewPassword(){
+ const p1=$('#newPassword').value, p2=$('#newPassword2').value;
+ if(p1.length<8) return alertBox($('#authAlert'),'Le nouveau mot de passe doit contenir au moins 8 caractères.','err');
+ if(p1!==p2) return alertBox($('#authAlert'),'Les deux mots de passe ne correspondent pas.','err');
+ try{
+   const {error}=await sb.auth.updateUser({password:p1});
+   if(error) throw error;
+   $('#recoveryPanel').classList.add('hidden');
+   $('#newPassword').value=''; $('#newPassword2').value='';
+   alertBox($('#authAlert'),'Mot de passe modifié. Vous pouvez maintenant vous connecter.','ok');
+   await sb.auth.signOut();
+   showAuth();
+ }catch(e){
+   alertBox($('#authAlert'),e.message||'Impossible de modifier le mot de passe.','err');
+ }
 }
 
 async function authSubmit(){
