@@ -46,21 +46,21 @@ jobs:
 
       - name: Rename outputs
         run: |
-          cp app/build/outputs/apk/release/app-release.apk USV-Troc-v1.0.10.apk
-          cp app/build/outputs/bundle/release/app-release.aab USV-Troc-v1.0.10.aab
+          cp app/build/outputs/apk/release/app-release.apk USV-Troc-v1.0.11.apk
+          cp app/build/outputs/bundle/release/app-release.aab USV-Troc-v1.0.11.aab
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: USV-Troc-v1.0.10-APK
-          path: USV-Troc-v1.0.10.apk
+          name: USV-Troc-v1.0.11-APK
+          path: USV-Troc-v1.0.11.apk
           if-no-files-found: error
           retention-days: 30
 
       - name: Upload Play Store AAB
         uses: actions/upload-artifact@v4
         with:
-          name: USV-Troc-v1.0.10-PlayStore-AAB
-          path: USV-Troc-v1.0.10.aab
+          name: USV-Troc-v1.0.11-PlayStore-AAB
+          path: USV-Troc-v1.0.11.aab
           if-no-files-found: error
           retention-days: 30
