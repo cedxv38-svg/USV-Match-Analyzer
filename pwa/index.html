@@ -286,6 +286,8 @@ async function boot(){
  try{ const old=JSON.parse(localStorage.getItem('usv_final_listings')||'[]'); if(Array.isArray(old) && old.some(x=>['d1','d2','d3','d4'].includes(String(x.id)))) localStorage.setItem('usv_final_listings','[]'); }catch{}
  bindUI();
  if($('#rememberLogin')) $('#rememberLogin').checked = localStorage.getItem('usv_remember_login') !== '0';
+ const rememberedEmail=localStorage.getItem('usv_login_email')||'';
+ if(rememberedEmail && $('#authEmail')) $('#authEmail').value=rememberedEmail;
  $('#handoverPlace').textContent=CFG.HANDOVER_PLACE || 'Stade de La Martinette';
  if(CFG.INVITE_CODE) $('#inviteField').classList.remove('hidden');
  if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
@@ -405,7 +407,10 @@ async function authSubmit(){
      if(data.user) await sb.from('profiles').update({full_name,category}).eq('id',data.user.id);
      alertBox($('#authAlert'),'Compte créé. Vérifiez votre e-mail si une confirmation est demandée.','ok');
    }else{
-     localStorage.setItem('usv_remember_login', $('#rememberLogin')?.checked === false ? '0' : '1');
+     const remember=$('#rememberLogin')?.checked !== false;
+     localStorage.setItem('usv_remember_login', remember ? '1' : '0');
+     if(remember) localStorage.setItem('usv_login_email',email);
+     else localStorage.removeItem('usv_login_email');
      const {data,error}=await sb.auth.signInWithPassword({email,password});
      if(error) throw error;
      await useSession(data.session);
