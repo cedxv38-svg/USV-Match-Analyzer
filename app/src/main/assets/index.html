@@ -580,7 +580,13 @@ async function reportListing(id){
 async function contactListing(id){
  const all=await fetchListings(); const x=all.find(a=>String(a.id)===String(id)); if(!x||x.user_id===currentUser.id)return;
  currentThread={listingId:x.id,otherId:x.user_id,otherName:x.owner_name||'Membre USV',title:x.title};
- closeDetail();go('messages');showThread();await renderThread();
+ closeDetail();
+ $('.page').forEach(p=>p.classList.toggle('active',p.id==='page-messages'));
+ $('.bottom-nav button').forEach(b=>b.classList.toggle('active',b.dataset.nav==='messages'));
+ window.scrollTo({top:0,behavior:'smooth'});
+ showThread();
+ await renderThread();
+ setTimeout(()=>$('#messageInput')?.focus(),50);
 }
 
 async function openNewMessageBox(){
