@@ -63,6 +63,7 @@ window.USV_TROC_CONFIG = {
         <div class="field"><label for="authCategory">Catégorie liée au club</label><select id="authCategory"><option value="">Choisir</option><option>U6/U7</option><option>U8/U9</option><option>U10/U11</option><option>U12/U13</option><option>U14/U15</option><option>U16/U17</option><option>Seniors</option><option>Vétérans</option><option>Dirigeant / Éducateur</option><option>Autre</option></select></div>
         <div id="inviteField" class="field hidden"><label for="inviteCode">Code club</label><input id="inviteCode" inputmode="text" autocomplete="off" placeholder="Code communiqué par l'USV"></div>
         <label class="checkline"><input id="acceptRules" type="checkbox"> <span>J'accepte les <button id="readCguRegister" type="button" style="border:0;background:none;padding:0;color:#0753a7;text-decoration:underline;font:inherit;font-weight:800">CGU USV Troc</button> (version 2026-11-02-v1).</span></label>
+        <label class="checkline"><input id="ackPrivacy" type="checkbox"> <span>J'ai pris connaissance de la <button id="readPrivacyRegister" type="button" style="border:0;background:none;padding:0;color:#0753a7;text-decoration:underline;font:inherit;font-weight:800">politique Confidentialité & RGPD</button>.</span></label>
       </div>
 
       <button id="authSubmit" class="btn primary wide" type="button">Se connecter</button>
@@ -178,6 +179,7 @@ window.USV_TROC_CONFIG = {
 
         <div class="settings-card">
           <button id="rulesBtn" class="settings-row" type="button"><span>📘</span><div><b>CGU USV Troc</b><small>Lire les conditions d'utilisation · 2026-11-02-v1</small></div><span>›</span></button>
+          <button id="privacyBtn" class="settings-row" type="button"><span>🔐</span><div><b>Confidentialité & RGPD</b><small>Données personnelles · 2026-11-02-v1</small></div><span>›</span></button>
           <button id="handoverBtn" class="settings-row" type="button"><span>📍</span><div><b>Remise conseillée</b><small id="handoverPlace">Stade de La Martinette</small></div><span>›</span></button>
           <button id="installSettingsBtn" class="settings-row hidden" type="button"><span>📲</span><div><b>Installer USV Troc</b><small>Ajouter l'application à l'écran d'accueil</small></div><span>›</span></button>
           <button id="logoutBtn" class="settings-row danger-row" type="button"><span>↪</span><div><b>Se déconnecter</b><small>Quitter votre compte</small></div><span>›</span></button>
@@ -228,6 +230,29 @@ window.USV_TROC_CONFIG = {
       <button id="closeRulesBtn" class="btn soft wide" type="button" style="margin-top:8px">Fermer</button>
     </div>
   </div>
+  <div id="privacyModal" class="modal hidden" aria-modal="true" role="dialog">
+    <div class="modal-backdrop" data-close-privacy></div>
+    <div class="sheet rules-sheet">
+      <button class="sheet-close" data-close-privacy type="button">×</button>
+      <div class="rules-hero"><div><span class="eyebrow">CONFIDENTIALITÉ</span><h2>Politique RGPD USV Troc</h2><small>Version 2026-11-02-v1 — 2 novembre 2026</small></div></div>
+      <div style="font-size:12px;line-height:1.55;color:#26364a;max-height:62vh;overflow-y:auto;padding-right:4px">
+        <p><b>Responsable du traitement.</b> Les traitements de données liés à USV Troc sont réalisés sous la responsabilité de l'Union Sportive Valdainoise (USV), qui détermine les finalités et les moyens du service. Cette notice complète la politique de protection des données du club lorsqu'elle est applicable à USV Troc.</p>
+        <p><b>Données traitées.</b> USV Troc peut traiter notamment : nom et prénom, adresse e-mail, catégorie liée au club, identifiant de compte, annonces, descriptions, photos, messages, signalements, dates de création et d'acceptation des documents applicables, ainsi que les données techniques strictement nécessaires au fonctionnement et à la sécurité du service.</p>
+        <p><b>Finalités.</b> Ces données sont utilisées pour créer et gérer les comptes, permettre la publication d'annonces, la messagerie entre membres, la modération, la sécurité du service, le traitement des signalements et la gestion des demandes liées aux droits des utilisateurs.</p>
+        <p><b>Bases juridiques.</b> Les traitements nécessaires à la fourniture du service reposent sur l'exécution du service demandé par l'utilisateur et, pour la sécurité, la modération et la défense des droits du club, sur l'intérêt légitime de l'USV. Lorsqu'un consentement spécifique est légalement nécessaire pour une fonctionnalité distincte, il est demandé séparément.</p>
+        <p><b>Destinataires.</b> Les données sont accessibles aux personnes habilitées de l'USV dans la mesure nécessaire à leurs fonctions et aux prestataires techniques indispensables au fonctionnement de l'application, notamment l'hébergement et la base de données. Ces prestataires n'agissent que pour fournir le service technique attendu.</p>
+        <p><b>Conservation.</b> Les données sont conservées tant qu'elles sont nécessaires au fonctionnement du compte et du service. Après la fin d'utilisation, elles peuvent être conservées pendant la durée nécessaire à la gestion d'un litige, à la sécurité ou au respect d'obligations légales, puis supprimées ou anonymisées conformément aux règles du club.</p>
+        <p><b>Vos droits.</b> Selon votre situation, vous pouvez demander l'accès à vos données, leur rectification, leur effacement, la limitation de leur traitement ou vous opposer à certains traitements. Vous pouvez également introduire une réclamation auprès de la CNIL.</p>
+        <p><b>Contact.</b> Pour toute question ou demande relative à vos données personnelles : <b>usv1922@gmail.com</b>.</p>
+        <p><b>Permissions du téléphone.</b> Les autorisations Android (photos, appareil photo, notifications, etc.) servent uniquement à permettre les fonctionnalités correspondantes. Elles ne remplacent pas un consentement RGPD lorsqu'un consentement est requis par la loi.</p>
+        <p><b>Mise à jour.</b> Cette notice peut évoluer. En cas de modification substantielle, l'utilisateur en est informé dans l'application.</p>
+      </div>
+      <div id="privacyAckInfo" class="hidden" style="margin:10px 0;padding:9px;border-radius:10px;background:#fff8cf;font-size:11px">En appuyant sur « J'ai pris connaissance », la version et la date de présentation de cette notice seront enregistrées sur votre compte.</div>
+      <button id="ackPrivacyBtn" class="btn primary wide hidden" type="button">J'ai pris connaissance</button>
+      <button id="closePrivacyBtn" class="btn soft wide" type="button" style="margin-top:8px">Fermer</button>
+    </div>
+  </div>
+
 <script>
 (() => {
 'use strict';
@@ -237,6 +262,8 @@ const $$ = s => [...document.querySelectorAll(s)];
 const onlineReady = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
 const CGU_VERSION='2026-11-02-v1';
 let cguAcceptanceRequired=false;
+const PRIVACY_VERSION='2026-11-02-v1';
+let privacyAcknowledgementRequired=false;
 const rememberStorage = {
   getItem(key){
     const remember = localStorage.getItem('usv_remember_login') !== '0';
@@ -352,6 +379,11 @@ function bindUI(){
  $('#rulesBtn').addEventListener('click',()=>openCgu(false));
  $('#readCguRegister').addEventListener('click',e=>{e.preventDefault();openCgu(false);});
  $('#acceptCguBtn').addEventListener('click',acceptCurrentCgu);
+ $('#privacyBtn').addEventListener('click',()=>openPrivacy(false));
+ $('#readPrivacyRegister').addEventListener('click',e=>{e.preventDefault();openPrivacy(false);});
+ $('#ackPrivacyBtn').addEventListener('click',acknowledgePrivacy);
+ $('#closePrivacyBtn').addEventListener('click',closePrivacy);
+ $('[data-close-privacy]').forEach(x=>x.addEventListener('click',closePrivacy));
  $('#closeRulesBtn').addEventListener('click',closeRules);
  $$('[data-close-rules]').forEach(x=>x.addEventListener('click',closeRules));
  $$('[data-close-modal]').forEach(x=>x.addEventListener('click',closeDetail));
@@ -408,7 +440,8 @@ async function authSubmit(){
  if(password.length<8) return alertBox($('#authAlert'),'Le mot de passe doit contenir au moins 8 caractères.','err');
  if(register){
    if(CFG.INVITE_CODE && $('#inviteCode').value.trim()!==CFG.INVITE_CODE) return alertBox($('#authAlert'),'Le code club est incorrect.','err');
-   if(!$('#acceptRules').checked) return alertBox($('#authAlert'),'Vous devez accepter les règles USV Troc.','err');
+   if(!$('#acceptRules').checked) return alertBox($('#authAlert'),'Vous devez accepter les CGU USV Troc.','err');
+   if(!$('#ackPrivacy').checked) return alertBox($('#authAlert'),'Vous devez confirmer avoir pris connaissance de la politique Confidentialité & RGPD.','err');
  }
  if(!onlineReady) return alertBox($('#authAlert'),'La version réelle doit être reliée au serveur USV avant la première connexion.','info');
  const btn=$('#authSubmit'); setBusy(btn,true,register?'Création…':'Connexion…');
@@ -417,9 +450,10 @@ async function authSubmit(){
      const full_name=$('#authName').value.trim() || email.split('@')[0];
      const category=$('#authCategory').value;
      const acceptedAt=new Date().toISOString();
-     const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name,category,cgu_version:CGU_VERSION,cgu_accepted_at:acceptedAt}}});
+     const privacySeenAt=acceptedAt;
+     const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name,category,cgu_version:CGU_VERSION,cgu_accepted_at:acceptedAt,privacy_version:PRIVACY_VERSION,privacy_seen_at:privacySeenAt}}});
      if(error) throw error;
-     if(data.user && data.session) await sb.from('profiles').update({full_name,category,cgu_version:CGU_VERSION,cgu_accepted_at:acceptedAt}).eq('id',data.user.id);
+     if(data.user && data.session) await sb.from('profiles').update({full_name,category,cgu_version:CGU_VERSION,cgu_accepted_at:acceptedAt,privacy_version:PRIVACY_VERSION,privacy_seen_at:privacySeenAt}).eq('id',data.user.id);
      alertBox($('#authAlert'),'Compte créé. Vérifiez votre e-mail si une confirmation est demandée.','ok');
    }else{
      const remember=$('#rememberLogin')?.checked !== false;
@@ -441,6 +475,7 @@ async function useSession(session){
  currentProfile=data||{full_name:currentUser.user_metadata?.full_name||currentUser.email,category:currentUser.user_metadata?.category||''};
  showApp(); subscribeRealtime();
  if(currentProfile?.cgu_version!==CGU_VERSION) setTimeout(()=>openCgu(true),80);
+ else if(currentProfile?.privacy_version!==PRIVACY_VERSION) setTimeout(()=>openPrivacy(true),100);
 }
 function showAuth(){ $('#authView').classList.remove('hidden'); $('#appView').classList.add('hidden'); }
 function showApp(){
@@ -535,6 +570,34 @@ async function openDetail(id){
  const r=$('[data-report]');if(r)r.onclick=()=>reportListing(x.id);
 }
 function closeDetail(){detailListing=null;$('#detailModal').classList.add('hidden');}
+function openPrivacy(requireAcknowledgement=false){
+ privacyAcknowledgementRequired=!!requireAcknowledgement;
+ $('#ackPrivacyBtn').classList.toggle('hidden',!requireAcknowledgement);
+ $('#privacyAckInfo').classList.toggle('hidden',!requireAcknowledgement);
+ $('#closePrivacyBtn').classList.toggle('hidden',!!requireAcknowledgement);
+ $('#privacyModal').classList.remove('hidden');
+}
+function closePrivacy(){
+ if(privacyAcknowledgementRequired)return;
+ $('#privacyModal').classList.add('hidden');
+}
+async function acknowledgePrivacy(){
+ if(!currentUser)return;
+ const btn=$('#ackPrivacyBtn');setBusy(btn,true,'Enregistrement…');
+ try{
+   const seenAt=new Date().toISOString();
+   const {error}=await sb.from('profiles').update({privacy_version:PRIVACY_VERSION,privacy_seen_at:seenAt}).eq('id',currentUser.id);
+   if(error)throw error;
+   currentProfile={...(currentProfile||{}),privacy_version:PRIVACY_VERSION,privacy_seen_at:seenAt};
+   privacyAcknowledgementRequired=false;
+   $('#privacyModal').classList.add('hidden');
+   $('#ackPrivacyBtn').classList.add('hidden');
+   $('#closePrivacyBtn').classList.remove('hidden');
+   toast('Information RGPD enregistrée.');
+ }catch(e){toast("Impossible d'enregistrer l'information RGPD.");}
+ finally{setBusy(btn,false);}
+}
+
 function openCgu(requireAcceptance=false){
  cguAcceptanceRequired=!!requireAcceptance;
  $('#acceptCguBtn').classList.toggle('hidden',!requireAcceptance);
