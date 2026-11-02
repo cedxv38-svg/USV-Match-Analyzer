@@ -19,6 +19,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
@@ -43,6 +44,9 @@ public class MainActivity extends Activity {
 
         webView = new WebView(this);
         webView.setBackgroundColor(Color.WHITE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            webView.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_YES);
+        }
         setContentView(webView);
 
         WebSettings settings = webView.getSettings();
@@ -55,6 +59,7 @@ public class MainActivity extends Activity {
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
         settings.setAllowUniversalAccessFromFileURLs(true);
+        settings.setSaveFormData(true);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
