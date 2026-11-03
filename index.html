@@ -471,11 +471,19 @@ async function authSubmit(){
 function demoLogin(){ alertBox($('#authAlert'),'Le mode démo a été supprimé.','info'); }
 async function useSession(session){
  demo=false; currentUser=session.user;
- const {data}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();
+ const {data,error}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();
  currentProfile=data||{full_name:currentUser.user_metadata?.full_name||currentUser.email,category:currentUser.user_metadata?.category||''};
+ const localCgu=localStorage.getItem('usv_cgu_'+currentUser.id);
+ const localPrivacy=localStorage.getItem('usv_privacy_'+currentUser.id);
+ const metaCgu=currentUser.user_metadata?.cgu_version;
+ const metaPrivacy=currentUser.user_metadata?.privacy_version;
+ const cguOk=currentProfile?.cgu_version===CGU_VERSION || metaCgu===CGU_VERSION || localCgu===CGU_VERSION;
+ const privacyOk=currentProfile?.privacy_version===PRIVACY_VERSION || metaPrivacy===PRIVACY_VERSION || localPrivacy===PRIVACY_VERSION;
+ if(currentProfile?.cgu_version===CGU_VERSION) localStorage.setItem('usv_cgu_'+currentUser.id,CGU_VERSION);
+ if(currentProfile?.privacy_version===PRIVACY_VERSION) localStorage.setItem('usv_privacy_'+currentUser.id,PRIVACY_VERSION);
  showApp(); subscribeRealtime();
- if(currentProfile?.cgu_version!==CGU_VERSION) setTimeout(()=>openCgu(true),80);
- else if(currentProfile?.privacy_version!==PRIVACY_VERSION) setTimeout(()=>openPrivacy(true),100);
+ if(!cguOk) setTimeout(()=>openCgu(true),80);
+ else if(!privacyOk) setTimeout(()=>openPrivacy(true),100);
 }
 function showAuth(){ $('#authView').classList.remove('hidden'); $('#appView').classList.add('hidden'); }
 function showApp(){
@@ -589,6 +597,8 @@ async function acknowledgePrivacy(){
    const {error}=await sb.from('profiles').update({privacy_version:PRIVACY_VERSION,privacy_seen_at:seenAt}).eq('id',currentUser.id);
    if(error)throw error;
    currentProfile={...(currentProfile||{}),privacy_version:PRIVACY_VERSION,privacy_seen_at:seenAt};
+   localStorage.setItem('usv_privacy_'+currentUser.id,PRIVACY_VERSION);
+   try{ await sb.auth.updateUser({data:{...(currentUser.user_metadata||{}),privacy_version:PRIVACY_VERSION,privacy_seen_at:seenAt}}); }catch{}
    privacyAcknowledgementRequired=false;
    $('#privacyModal').classList.add('hidden');
    $('#ackPrivacyBtn').classList.add('hidden');
@@ -617,6 +627,8 @@ async function acceptCurrentCgu(){
    const {error}=await sb.from('profiles').update({cgu_version:CGU_VERSION,cgu_accepted_at:acceptedAt}).eq('id',currentUser.id);
    if(error)throw error;
    currentProfile={...(currentProfile||{}),cgu_version:CGU_VERSION,cgu_accepted_at:acceptedAt};
+   localStorage.setItem('usv_cgu_'+currentUser.id,CGU_VERSION);
+   try{ await sb.auth.updateUser({data:{...(currentUser.user_metadata||{}),cgu_version:CGU_VERSION,cgu_accepted_at:acceptedAt}}); }catch{}
    cguAcceptanceRequired=false;
    $('#rulesModal').classList.add('hidden');
    $('#acceptCguBtn').classList.add('hidden');
