@@ -127,10 +127,17 @@ public class MainActivity extends Activity {
     }
 
     private void openImageChooser() {
-        Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
-        galleryIntent.setType("image/*");
-        galleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        Intent galleryIntent;
+        if (Build.VERSION.SDK_INT >= 33) {
+            galleryIntent = new Intent(MediaStore.ACTION_PICK_IMAGES);
+            galleryIntent.setType("image/*");
+            galleryIntent.putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, Math.min(5, MediaStore.getPickImagesMaxLimit()));
+        } else {
+            galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
+            galleryIntent.setType("image/*");
+            galleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
